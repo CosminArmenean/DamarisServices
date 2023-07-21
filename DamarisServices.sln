@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DamarisServices", "DamarisServices\DamarisServices.csproj", "{50013EC2-9918-43B5-B808-20364CD14EED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DamarisServices", "DamarisServices\DamarisServices.csproj", "{50013EC2-9918-43B5-B808-20364CD14EED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{9EF8546D-568F-466B-8EE3-3CC9CD9C5A97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +20,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{50013EC2-9918-43B5-B808-20364CD14EED} = {9EF8546D-568F-466B-8EE3-3CC9CD9C5A97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F6DB3C1-E19E-488D-BABE-3B03F70AB1A9}

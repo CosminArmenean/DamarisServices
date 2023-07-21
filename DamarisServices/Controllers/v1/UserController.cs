@@ -1,19 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace DamarisServices.Controllers
+namespace DamarisServices.Controllers.v1
 {
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0", Deprecated = true)]
+    public class UserController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<UserController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public UserController(ILogger<UserController> logger)
         {
             _logger = logger;
         }
