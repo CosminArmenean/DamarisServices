@@ -1,7 +1,9 @@
+using DamarisServices.Configurations.Filters;
 using DamarisServices.Services.Health;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.RateLimiting;
 using WatchDog;
 using WatchDog.src.Enums;
 using WatchDog.src.Models;
@@ -10,7 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(option =>
+{
+    option.Filters.Add(new IdentityFilter()); //global
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -42,19 +47,49 @@ builder.Services.AddApiVersioning(options =>
     );
 });
 
+
+//Add Rate Limiter fixed window  x/user
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("FixedWindowpolicy", opt =>
+    {
+        opt.Window = TimeSpan.FromSeconds(5);
+        opt.PermitLimit = 5;
+        opt.QueueLimit = 5;
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+    }).RejectionStatusCode = 429; // To many requests
+});
+
+//Add Concurency Rate Limiter 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddConcurrencyLimiter("ConcurrencyPolicy", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.QueueLimit = 5;
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+    }).RejectionStatusCode = 429; // To many requests
+});
+
+//Add Token Bucket  Rate Limiter 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddTokenBucketLimiter("TokenBucketPolicy", opt =>
+    {
+        opt.TokenLimit = 1000;
+        opt.QueueLimit = 500;
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        opt.ReplenishmentPeriod = TimeSpan.FromSeconds(10);
+        opt.TokensPerPeriod = 1000;
+        opt.AutoReplenishment = true;
+    }).RejectionStatusCode = 429; // To many requests
+});
+
+
 builder.Services.AddVersionedApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
     options.SubstituteApiVersionInUrl = true;
-});
-
-
-// This will tell ASP.NET Core how to determine the user's preferred language
-// and how to return localized strings.
-builder.Services.UseLocalization(options =>
-{
-    options. = "en-US";
-    options.SupportedCultures = new[] { "en-US", "es-ES" };
 });
 
 var app = builder.Build();
@@ -65,6 +100,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//rate limiter 
+app.UseRateLimiter();
 
 app.UseHttpsRedirection();
 

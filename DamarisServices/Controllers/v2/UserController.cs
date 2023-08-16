@@ -1,4 +1,6 @@
+using DamarisServices.Configurations.Filters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DamarisServices.Controllers.v2
 {
@@ -6,6 +8,8 @@ namespace DamarisServices.Controllers.v2
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("2.0")]
     [ApiVersion("2.1")]
+    [EnableRateLimiting("ConcurrencyPolicy")]
+    [MyActionFilterAttribute("UserController")]
     public class UserController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -22,6 +26,7 @@ namespace DamarisServices.Controllers.v2
 
         [HttpGet(Name = "GetWeatherForecastV2")]
         [MapToApiVersion("2.0")]
+        [UserAsyncActionFilterAttribute("AsyncFilter")]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
