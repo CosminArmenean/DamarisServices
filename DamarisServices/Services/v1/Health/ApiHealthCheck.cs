@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RestSharp;
 
-namespace DamarisServices.Services.Health;
+namespace DamarisServices.Services.v1.Health;
 
 public class ApiHealthCheck : IHealthCheck
 {

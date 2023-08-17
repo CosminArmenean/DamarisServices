@@ -1,0 +1,6 @@
+{
+  "WelcomeMessage": "Welcome to the English (US) version!",
+  "Greeting": "Hello!",
+  "Goodbye": "Goodbye!"
+  // ... Other localized strings
+}

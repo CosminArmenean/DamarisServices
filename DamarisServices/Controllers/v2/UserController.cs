@@ -1,4 +1,5 @@
 using DamarisServices.Configurations.Filters;
+using KafkaCommunicationLibrary.Producers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -16,17 +17,32 @@ namespace DamarisServices.Controllers.v2
         {
         "Hot hot hot hot hot", "cold cold cold"
     };
-
+        private readonly KafkaProducer<string, string> _kafkaService;
         private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger)
+        public UserController(KafkaProducer<string, string> kafkaService, ILogger<UserController> logger)
         {
+            _kafkaService = kafkaService;
             _logger = logger;
+        }
+
+
+        
+        [HttpPost(Name = "LoginV2")]
+        [MapToApiVersion("2.0")]
+        public IActionResult Login()
+        {
+            // Authenticate user and generate token
+
+            // Publish user authentication event to Kafka
+            _kafkaService.Produce("user-authentication-topic", "userLoggedInEvent", "User logged in");
+
+            return Ok(new { Token = "your_generated_token" });
         }
 
         [HttpGet(Name = "GetWeatherForecastV2")]
         [MapToApiVersion("2.0")]
-        [UserAsyncActionFilterAttribute("AsyncFilter")]
+        [UserAsyncActionFilterAttribute("AsyncFilter", 10)]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

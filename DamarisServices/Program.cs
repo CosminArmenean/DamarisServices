@@ -1,12 +1,22 @@
 using DamarisServices.Configurations.Filters;
-using DamarisServices.Services.Health;
+using DamarisServices.Services.v1.Health;
+using DamarisServices.SupportedCultures.v1;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System.Configuration;
+using System.Globalization;
 using WatchDog;
 using WatchDog.src.Enums;
 using WatchDog.src.Models;
+using StackExchange.Redis;
+using Confluent.Kafka;
+using DamarisServices.Services.v1.User;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +24,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(option =>
 {
-    option.Filters.Add(new IdentityFilter()); //global
+    option.Filters.Add(new IdentityFilter()); //adding global filter
 });
+
+//Configure Supported Cultures - Languages
+// Configure supported cultures and localization options
+var cultureProvider = new SupportedCultureProvider();
+var supportedCultures = cultureProvider.GetSupportedCultures();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");
+    options.SupportedCultures = (IList<CultureInfo>?)supportedCultures.Select(c => new CultureInfo(c.CultureCode));
+    options.SupportedUICultures = (IList<CultureInfo>?)supportedCultures.Select(c => new CultureInfo(c.CultureCode));
+
+
+});
+builder.Services.AddLocalization();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -92,6 +117,29 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
+// Configure Redis caching
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "IdentityMicroservice:";
+});
+
+//configuring kafka
+var producerConfig = new ProducerConfig();
+builder.Configuration.Bind("Kafka:Producer", producerConfig);
+builder.Services.AddSingleton(producerConfig);
+
+var consumerConfig = new ConsumerConfig();
+builder.Configuration.Bind("Kafka:Consumer", consumerConfig);
+builder.Services.AddSingleton(consumerConfig);
+
+
+
+builder.Services.AddTransient<IUserService, UserService>();
+
+//===================================================== APP =========================================================
+#region APP
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -103,6 +151,14 @@ if (app.Environment.IsDevelopment())
 
 //rate limiter 
 app.UseRateLimiter();
+
+//adding localization to enable language selector
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = (IList<CultureInfo>)supportedCultures.Select(c => new CultureInfo(c.CultureCode)),
+    SupportedUICultures = (IList<CultureInfo>)supportedCultures.Select(c => new CultureInfo(c.CultureCode))
+});
 
 app.UseHttpsRedirection();
 
@@ -130,3 +186,4 @@ app.MapHealthChecks("/health", new HealthCheckOptions()
 
 
 app.Run();
+#endregion //APP
