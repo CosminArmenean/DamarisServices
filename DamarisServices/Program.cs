@@ -133,8 +133,6 @@ var consumerConfig = new ConsumerConfig();
 builder.Configuration.Bind("Kafka:Consumer", consumerConfig);
 builder.Services.AddSingleton(consumerConfig);
 
-
-
 builder.Services.AddTransient<IUserService, UserService>();
 
 //===================================================== APP =========================================================

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,35 +13,31 @@ namespace Damaris.Domain.v2.Utilities.Generic
     /// <summary>
     /// Convert integer to bool value
     /// </summary>
-    public class IntToBoolModelBinder : IModelBinder
+    public class IntToBoolModelBinder
     {
-        public Task BindModelAsync(ModelBindingContext bindingContext)
-        {
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
-            var value = valueProviderResult.FirstValue;
-
+        public bool IntegerToBoolean(string value)
+        {           
             if (int.TryParse(value, out var intValue))
             {
-                bindingContext.Result = ModelBindingResult.Success(intValue == 0 ? false : true);
+               //do something
 
             }
             else if (bool.TryParse(value, out var boolValue))
             {
-                bindingContext.Result = ModelBindingResult.Success(boolValue);
+                //do something else
 
             }
             else if (string.IsNullOrWhiteSpace(value))
             {
-                bindingContext.Result = ModelBindingResult.Success(false);
+                //dunno
 
             }
             else
             {
-                bindingContext.ModelState.TryAddModelError(bindingContext.ModelName,
-                    $"{bindingContext.ModelName} should be a int, bool or empty string.");
+                // dunno
             }
 
-            return Task.CompletedTask;
+            return false;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,20 +7,19 @@ using System.Threading.Tasks;
 
 namespace Damaris.Domain.v2.Utilities.Validators
 {
+
     /// <summary>
     /// Password validator
     /// </summary>
-    public class PasswordValidator : IModelBinder
+    public class PasswordValidator
     {
         /// <summary>
         /// This method check if string contains the elements required for a password
         /// </summary>
         /// <param name="bindingContext"></param>
         /// <returns></returns>
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        public bool ValidatePassword(string value)
         {
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
-            var value = valueProviderResult.FirstValue;
 
             if (!string.IsNullOrWhiteSpace(value))
             {
@@ -33,22 +31,20 @@ namespace Damaris.Domain.v2.Utilities.Validators
                 bool isValidated = hasNumber.IsMatch(value) && hasUpperChar.IsMatch(value) && hasSpecialCharacter.IsMatch(value);
                 if (isValidated)
                 {
-                    bindingContext.Result = ModelBindingResult.Success(value);
+                    //do something
                 }
                 else
                 {
-                    bindingContext.Result = ModelBindingResult.Failed();
+                    //do something else
 
                 }
             }
             else
             {
-                bindingContext.ModelState.TryAddModelError(bindingContext.ModelName,
-                    $"{bindingContext.ModelName} should be a string or empty string.");
+                //
             }
 
-            return Task.CompletedTask;
+            return false;
         }
     }
 }
-

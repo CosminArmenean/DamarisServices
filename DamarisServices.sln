@@ -9,13 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{9E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{AB28B837-9C89-493D-899B-4009EEE76D34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageService", "LanguageService\LanguageService.csproj", "{835FE7C7-D224-4767-8B4B-9E8B00E3A4E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageService", "LanguageService\LanguageService.csproj", "{835FE7C7-D224-4767-8B4B-9E8B00E3A4E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaCommunicationLibrary", "KafkaCommunicationLibrary\KafkaCommunicationLibrary.csproj", "{96B95BC8-42F3-4EA2-9A35-ACD7560AB7D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaCommunicationLibrary", "KafkaCommunicationLibrary\KafkaCommunicationLibrary.csproj", "{96B95BC8-42F3-4EA2-9A35-ACD7560AB7D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damaris.Data", "Damaris.Data\Damaris.Data.csproj", "{1EDF3BF3-44C5-45C8-AF3B-E87BEAB73D19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Damaris.Domain", "Damaris.Domain\Damaris.Domain.csproj", "{22C33E75-ED3B-48B6-A677-8F8E59173B50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damaris.Domain", "Damaris.Domain\Damaris.Domain.csproj", "{22C33E75-ED3B-48B6-A677-8F8E59173B50}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damaris.DataService", "Damaris.DataService\Damaris.DataService.csproj", "{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,14 +35,14 @@ Global
 		{96B95BC8-42F3-4EA2-9A35-ACD7560AB7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96B95BC8-42F3-4EA2-9A35-ACD7560AB7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96B95BC8-42F3-4EA2-9A35-ACD7560AB7D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EDF3BF3-44C5-45C8-AF3B-E87BEAB73D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EDF3BF3-44C5-45C8-AF3B-E87BEAB73D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EDF3BF3-44C5-45C8-AF3B-E87BEAB73D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EDF3BF3-44C5-45C8-AF3B-E87BEAB73D19}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22C33E75-ED3B-48B6-A677-8F8E59173B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22C33E75-ED3B-48B6-A677-8F8E59173B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22C33E75-ED3B-48B6-A677-8F8E59173B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22C33E75-ED3B-48B6-A677-8F8E59173B50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,8 +51,8 @@ Global
 		{50013EC2-9918-43B5-B808-20364CD14EED} = {9EF8546D-568F-466B-8EE3-3CC9CD9C5A97}
 		{835FE7C7-D224-4767-8B4B-9E8B00E3A4E1} = {AB28B837-9C89-493D-899B-4009EEE76D34}
 		{96B95BC8-42F3-4EA2-9A35-ACD7560AB7D8} = {AB28B837-9C89-493D-899B-4009EEE76D34}
-		{1EDF3BF3-44C5-45C8-AF3B-E87BEAB73D19} = {AB28B837-9C89-493D-899B-4009EEE76D34}
 		{22C33E75-ED3B-48B6-A677-8F8E59173B50} = {AB28B837-9C89-493D-899B-4009EEE76D34}
+		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB} = {AB28B837-9C89-493D-899B-4009EEE76D34}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F6DB3C1-E19E-488D-BABE-3B03F70AB1A9}

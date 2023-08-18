@@ -1,56 +1,79 @@
+using Confluent.Kafka;
+using Damaris.DataService.Utilities.v1;
+using Damaris.Domain.v1.Models.User;
+using Damaris.Domain.v2.Models.User;
+using DamarisServices.Features.v1.User;
 using DamarisServices.Services.v1.User;
 using KafkaCommunicationLibrary.Producers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DamarisServices.Controllers.v1
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0", Deprecated = true)]
-    public class UserController : ControllerBase
+    public class UserController : ApiBaseController
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-        private readonly KafkaProducer<string, string> _kafkaService;
-        private readonly ILogger<UserController> _logger;
-        private readonly IUserService _userService;
+        #region ======================= [Private Properties] ==============================
 
-        public UserController(KafkaProducer<string, string> kafkaService, ILogger<UserController> logger)
-        {
-            _kafkaService = kafkaService;
-            _logger = logger;
-        }
+        private readonly UserManager<User> _userManager;
+        #endregion ======================= [Private Properties] ==============================
+        public UserController(IProducer<string, string> producer, IConsumer<string, string> consumer, ILogger<ApiBaseController> watchdogLogger) : base(producer, consumer, watchdogLogger) { }
+        
 
 
-        [HttpPost(Name = "Login")]       
-        public IActionResult Login()
+        [HttpPost(Name = "Login")]
+        public async Task<IActionResult> Login([FromBody] Login model)
         {
-            // Authenticate user
-            var user = _userService.Authenticate(model.Username, model.Password);
-            if (user == null)
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                return Unauthorized(new { Message = "Invalid credentials" });
+                //var token = GenerateJwtToken(user);
+                //i have to generate the request and use 
+                //await _kafkaProducer.ProduceAsync("user-logged-in-topic", new Message<string, string>
+                //{
+                //    Key = user.Id,
+                //    Value = "User logged in"
+                //});
+
+                return Ok(new { Token = "", UserId = user.Id, UserName = user.UserName });
             }
 
-            // Generate token and send user authentication event to Kafka
-            var token = _userService.GenerateToken(user);
-            _kafkaService.Produce("user-authentication-topic", user.Id.ToString(), "User logged in");
-
-            return Ok(new { Token = token });
+            return Unauthorized();
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
-        {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
+        //[HttpPost("register")]
+        //public async Task<IActionResult> Register([FromBody] RegisterUser model)
+        //{
+        //    var user = new User
+        //    {
+        //        MobilePhone = model.MobilePhone,
+        //        Email = model.Email   
+        //    };
+
+        //    //implement here 
+        //    var result = await HandleRequestAsync(new CreateNewUserRequest() {  UserId = "test", Payload = new Damaris.Domain.v1.Dtos.GenericDtos.ProducerRecord() { Value = "test" } });
+
+
+        //    var result = await _userManager.CreateAsync(user, model.Password);
+        //    if (result.Succeeded)
+        //    {
+        //        // User registered successfully
+        //        await _kafkaProducer.ProduceAsync("user-registered-topic", new Message<string, string>
+        //        {
+        //            Key = user.Id,
+        //            Value = "New user registered"
+        //        });
+
+        //        return Ok(new { message = "User registered successfully" });
+        //    }
+
+        //    // User registration failed
+        //    return BadRequest(result.Errors);
+        //}
     }
 }
