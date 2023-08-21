@@ -9,8 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.9" />
+    <PackageReference Include="Dapper" Version="2.0.151" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.32.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
     <PackageReference Include="MySql.Data" Version="8.1.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
@@ -20,8 +23,8 @@
   <ItemGroup>
     <Folder Include="Controllers\v2\" />
     <Folder Include="Data\v2\" />
+    <Folder Include="Providers\v1\Generic\" />
     <Folder Include="Providers\v2\" />
-    <Folder Include="Providers\v1\" />
     <Folder Include="Repositories\v2\" />
   </ItemGroup>
 

@@ -42,7 +42,7 @@ namespace Damaris.DataService.Utilities.v1
                 var record = "";// new ProducerRecord<string, string>(topic, request.ToString());
 
                 // Send the record to Kafka
-                // await _producer.ProduceAsync(record);
+                 // await _producer.ProduceAsync(record);
             }
             catch (Exception ex)
             {

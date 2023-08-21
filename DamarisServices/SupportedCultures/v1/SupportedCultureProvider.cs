@@ -11,7 +11,7 @@ namespace DamarisServices.SupportedCultures.v1
             var cultures = new List<SupportedCulture>
             {
                  new SupportedCulture("en-US", "English (US)", "MM/dd/yyyy", "hh:mm tt", "0.00", "USD", "$"),
-                 new SupportedCulture("ro-RO", "Romanian (ROMANIA)", "dd/MM/yyyy", "HH:mm", "0,00", "EUR", "€"),
+                 new SupportedCulture("ro-RO", "Romanian (RO)", "dd/MM/yyyy", "HH:mm", "0,00", "EUR", "€")
                  // Add more supported cultures as needed               
             };
 

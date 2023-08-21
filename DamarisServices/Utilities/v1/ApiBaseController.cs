@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Damaris.Domain.v1.Dtos.GenericDtos;
 using KafkaCommunicationLibrary.Producers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +27,7 @@ namespace DamarisServices.Utilities.v1
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        protected async Task HandleRequestAsync<T>(T request)
+        protected async Task<DeliveryResult<string, string>> HandleRequestAsync<T>(ApiRequest<T> request) where T : DeliveryResult<string, string>
         {
             try
             {
@@ -34,19 +35,26 @@ namespace DamarisServices.Utilities.v1
                 var topic = request.GetType().Name;
 
                 //log the request
-                string message = $"Receive request: {HttpContext.Request.Method} {HttpContext.Request.Path}";
-                _watchdogLogger.LogInformation(message);
+                string messagelog = $"Receive request: {HttpContext.Request.Method} {HttpContext.Request.Path}";
+                _watchdogLogger.LogInformation(messagelog);
 
                 // Create a Kafka record
-                var record = "";// new ProducerRecord<string, string>(topic, request.ToString());
+                var record = new ProducerRecord() { Topic = topic , Value = request.ToString() };
+                // Create a Message object
+                Message<string, string> message = new Message<string, string>() { Key = "",  Value = "Test" };
 
                 // Send the record to Kafka
-                // await _producer.ProduceAsync(record);
+                DeliveryResult<string, string> response = await _producer.ProduceAsync(record.Topic, message);
+                // Consume the response from Kafka
+                
+
+                return response;
             }
             catch (Exception ex)
             {
                 // Handle the exception
                 _watchdogLogger.LogError(ex, "Failed to send request to Kafka");
+                return null;
             }
         }
 

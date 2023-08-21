@@ -118,11 +118,11 @@ builder.Services.AddVersionedApiExplorer(options =>
 });
 
 // Configure Redis caching
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
-    options.InstanceName = "IdentityMicroservice:";
-});
+//builder.Services.AddStackExchangeRedisCache(options =>
+//{
+//    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+//    options.InstanceName = "IdentityMicroservice:";
+//});
 
 //configuring kafka
 var producerConfig = new ProducerConfig();
@@ -133,7 +133,7 @@ var consumerConfig = new ConsumerConfig();
 builder.Configuration.Bind("Kafka:Consumer", consumerConfig);
 builder.Services.AddSingleton(consumerConfig);
 
-builder.Services.AddTransient<IUserService, UserService>();
+//builder.Services.AddTransient<IUserService, UserService>();
 
 //===================================================== APP =========================================================
 #region APP
@@ -154,8 +154,8 @@ app.UseRateLimiter();
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
     DefaultRequestCulture = new RequestCulture("en-US"),
-    SupportedCultures = (IList<CultureInfo>)supportedCultures.Select(c => new CultureInfo(c.CultureCode)),
-    SupportedUICultures = (IList<CultureInfo>)supportedCultures.Select(c => new CultureInfo(c.CultureCode))
+    SupportedCultures = (IList<CultureInfo>)supportedCultures.Select(c => new CultureInfo(c.CultureCode)).ToList(),
+    SupportedUICultures = (IList<CultureInfo>)supportedCultures.Select(c => new CultureInfo(c.CultureCode)).ToList()
 });
 
 app.UseHttpsRedirection();

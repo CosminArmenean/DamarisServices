@@ -23,6 +23,7 @@ namespace DamarisServices.Features.v1.User
                
         public async override Task<DeliveryResult<string, string>> Handle(CreateNewUserRequest request, CancellationToken cancellationToken)
         {
+            request.Payload.Topic = "user-logged-in-topic";
             // Log the request to the watchdog logger
             _watchdogLogger.LogInformation("Sent request to Kafka: {request}", request);
             // Create a Message object

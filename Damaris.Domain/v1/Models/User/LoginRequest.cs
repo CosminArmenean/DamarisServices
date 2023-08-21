@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Damaris.Domain.v1.Models.User
 {
-    public class Login
+    public class LoginRequest
     {
         public string UserName { get; set; }
         public string Password { get; set; }
