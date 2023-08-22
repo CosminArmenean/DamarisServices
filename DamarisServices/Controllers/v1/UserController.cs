@@ -6,12 +6,19 @@ using DamarisServices.Configurations.Filters;
 using DamarisServices.Features.v1.User;
 using DamarisServices.Services.v1.User;
 using DamarisServices.Utilities.v1;
+using DamarisServices.Utilities.v1.Generic;
+using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
+using KafkaCommunicationLibrary.Repositories.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DamarisServices.Controllers.v1
 {
@@ -27,8 +34,10 @@ namespace DamarisServices.Controllers.v1
         #region ======================= [Private Properties] ==============================
 
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IProducer<string, string> _producer;
+        private readonly KafkaConsumer<string, string> _consumer;
         #endregion ======================= [Private Properties] ==============================
-        public UserController(IProducer<string, string> producer, ILogger<ApiBaseController> watchdogLogger) : base(producer, watchdogLogger) { }
+        public UserController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory) : base(mediator, producer, consumer, loggerFactory) { }
 
 
         
@@ -36,20 +45,28 @@ namespace DamarisServices.Controllers.v1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
-            ApplicationUser user = await _userManager.FindByNameAsync(model.UserName);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
-            {
-                //GenerateJwtToken
-               var token = await HandleRequestAsync(new CreateTokenRequest() { User = user });
-                //i have to generate the request and use 
-                //var r = await _kafkaProducer.ProduceAsync("user-logged-in-topic", new Message<string, string>
-                //{
-                //    Key = user.Id,
-                //    Value = "User logged in"
-                //});
+            ApplicationUser user = new() {  UserName = "Cosmin", PasswordHash = "test"};
+            //user = await _userManager.FindByNameAsync(model.UserName);
+            ////if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            
+            //{
+            //GenerateJwtToken
+               var token = await HandleRequestAsync(new CreateTokenRequest() { User = user, KafkaRecord = new Damaris.Domain.v1.Dtos.GenericDtos.ProducerRecord() { Topic = "user-authentication-topic" } });
+            // Wait for response from Kafka topic
+            
 
-                return Ok(new { Token = "", UserId = user.Id, UserName = user.UserName });
-            }
+            // Return processed data as response to the user
+            return Ok();
+
+            //i have to generate the request and use 
+            //var r = await _kafkaProducer.ProduceAsync("user-logged-in-topic", new Message<string, string>
+            //{
+            //    Key = user.Id,
+            //    Value = "User logged in"
+            //});
+
+            // return Ok(new { Token = "", UserId = user.Id, UserName = user.UserName });
+            //}
 
             return Unauthorized();
         }
@@ -98,5 +115,7 @@ namespace DamarisServices.Controllers.v1
         //    // User registration failed
         //    return BadRequest(result.Errors);
         //}
+
+       
     }
 }

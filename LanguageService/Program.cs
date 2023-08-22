@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+//Register the Kafka Consumer and producer
+builder.Services.AddScoped<KafkaConsumer<string, string>>();
+builder.Services.AddScoped<KafkaProducer<string, string>>();
 
 
 

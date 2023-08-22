@@ -1,8 +1,9 @@
 ﻿using Confluent.Kafka;
 using DamarisServices.Features.v1.User;
+using KafkaCommunicationLibrary.Consumers;
+using KafkaCommunicationLibrary.Producers;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static Confluent.Kafka.ConfigPropertyNames;
-
 namespace DamarisServices.Utilities.v1
 {
     /// <summary>
@@ -10,16 +11,18 @@ namespace DamarisServices.Utilities.v1
     /// </summary>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public abstract class ApiRequestHandler<TRequest, TResponse> where TRequest : ApiRequest<TResponse>
+    public abstract class ApiRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> where TRequest : ApiRequest<TResponse>
         where TResponse : DeliveryResult<string, string>
     {
-        protected readonly IProducer<string, string> _producer;
-        protected readonly ILogger<ApiRequestHandler<TRequest, TResponse>> _watchdogLogger;
+        protected readonly KafkaProducer<string, string> _producer;
+        protected readonly KafkaConsumer<string, string> _consumer;
+        protected readonly ILogger _logger;
 
-        protected ApiRequestHandler(IProducer<string, string> producer, ILogger<ApiRequestHandler<TRequest, TResponse>> watchdogLogger)
+        protected ApiRequestHandler(KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILogger logger)
         {
             _producer = producer;
-            _watchdogLogger = watchdogLogger;
+            _consumer = consumer;
+            _logger = logger;
         }
 
         /// <summary>

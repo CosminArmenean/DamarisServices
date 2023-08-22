@@ -17,6 +17,11 @@ using StackExchange.Redis;
 using Confluent.Kafka;
 using DamarisServices.Services.v1.User;
 using Microsoft.EntityFrameworkCore;
+using KafkaCommunicationLibrary.Consumers;
+using KafkaCommunicationLibrary.Producers;
+using DamarisServices.Repositories.v1.Implementation.TopicEventsProcessor;
+using KafkaCommunicationLibrary.Repositories.Interfaces;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +31,7 @@ builder.Services.AddControllers(option =>
 {
     option.Filters.Add(new IdentityFilter()); //adding global filter
 });
+
 
 //Configure Supported Cultures - Languages
 // Configure supported cultures and localization options
@@ -54,6 +60,7 @@ builder.Services.AddWatchDogServices(opt =>
     opt.SetExternalDbConnString = builder.Configuration.GetConnectionString(name: "PostGreSqlConnection");
     opt.DbDriverOption = WatchDogDbDriverEnum.PostgreSql;
 });
+
 
 //Add health checks
 builder.Services.AddHealthChecks()
@@ -133,7 +140,22 @@ var consumerConfig = new ConsumerConfig();
 builder.Configuration.Bind("Kafka:Consumer", consumerConfig);
 builder.Services.AddSingleton(consumerConfig);
 
+
+builder.Services.AddScoped<KafkaConsumer<string, string>>();
+builder.Services.AddScoped<KafkaProducer<string, string>>();
+
+//Register the topic event processors as scoped services:
+builder.Services.AddScoped<IKafkaTopicEventProcessor, LoginEventProcessor>();
+
 //builder.Services.AddTransient<IUserService, UserService>();
+//builder.Services.AddHttpClient<IKafkaService, KafkaServiceClient>(client =>
+//{
+//    client.BaseAddress = new Uri(Configuration["KafkaServiceConfig:BaseUri"]);
+//});
+//builder.Services.AddScoped<IProducer, >
+//Add MediatR           
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
 
 //===================================================== APP =========================================================
 #region APP

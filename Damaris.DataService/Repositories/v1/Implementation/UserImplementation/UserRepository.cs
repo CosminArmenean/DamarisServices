@@ -1,4 +1,5 @@
-﻿using Damaris.DataService.Repositories.v1.Interfaces.Generic;
+﻿using Damaris.DataService.Repositories.v1.Interfaces.Contracts;
+using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.Domain.v1.Dtos.GenericDtos;
 using Damaris.Domain.v1.Dtos.UserDtos;
@@ -14,7 +15,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 {
     public class UserRepository : BaseRepository, IUserRepository
     {
-
+       
         //procedures names
         #region ================ [Procedures] =========================
 
@@ -32,6 +33,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
         /// <param name="connectionString"></param>
         public UserRepository(ILoggerFactory loggerFactory, IDatabaseConnectionFactory connectionFactory) : base(loggerFactory, connectionFactory) { }
 
+        
 
         public Task ApplyUserPatchAsync<TEntity>(TEntity? entity, List<PatchDto>? patchDto) where TEntity : User
         {
@@ -57,5 +59,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

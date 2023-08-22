@@ -1,6 +1,10 @@
 using Confluent.Kafka;
+using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
+using Damaris.DataService.Repositories.v1.Interfaces.Contracts;
+using Damaris.DataService.Services.v1.KafkaConsumer;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
+using KafkaCommunicationLibrary.Repositories.Interfaces;
 using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +19,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Register the topic event processors as scoped services:
+builder.Services.AddScoped<Damaris.DataService.Repositories.v1.Interfaces.Contracts.IKafkaTopicEventProcessor, LoginEventProcessor>();
+
+
+//Register the Kafka Consumer 
+//var consumerConfig = new ConsumerConfig();
+builder.Services.AddScoped<KafkaConsumer<string, string>>();
+builder.Services.AddScoped<KafkaProducer<string, string>>();
+
+//Add background services
+builder.Services.AddHostedService<IdentityServiceConsumer>();
 
 // Configure Kafka producer
 builder.Services.AddSingleton(provider =>

@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="7.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="v1\Interfaces\KafkaInterfaces\" />
+  </ItemGroup>
+
 </Project>

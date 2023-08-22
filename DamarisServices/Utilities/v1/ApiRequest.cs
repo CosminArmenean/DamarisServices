@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DamarisServices.Utilities.v1
@@ -7,5 +8,5 @@ namespace DamarisServices.Utilities.v1
     /// Base class for an api request.
     /// </summary>
     /// <typeparam name="TResponse"></typeparam>
-    public abstract class ApiRequest<TResponse>  where TResponse : DeliveryResult<string, string> { }
+    public abstract class ApiRequest<TResponse> : IRequest<TResponse> where TResponse : DeliveryResult<string, string> { }
 }

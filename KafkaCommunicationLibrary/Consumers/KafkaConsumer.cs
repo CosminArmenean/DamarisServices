@@ -30,6 +30,33 @@ namespace KafkaCommunicationLibrary.Consumers
                 return null;
             }
         }
+
+        public ConsumeResult<TKey, TValue> WaitForResponse(string responseTopic, string uniqueKey)
+        {
+            ConsumeResult<TKey, TValue> response = null;       
+            
+                _consumer.Subscribe(responseTopic);
+
+                bool responseFound = false;
+
+                while (!responseFound)
+                {
+                    var consumeResult = _consumer.Consume();
+                    var message = consumeResult.Value;
+
+                // Extract unique key from the message
+                var parts = new List<string>(); //message.Split(':');
+                    var messageKey = parts[0];
+
+                    if (messageKey == uniqueKey)
+                    {
+                        //response = parts[1]; // Extract the response part from the message
+                        responseFound = true;
+                    }
+                }
+            
+            return response;
+        }
         public void Dispose()
         {
             _consumer.Close();

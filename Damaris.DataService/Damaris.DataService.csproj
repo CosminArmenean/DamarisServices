@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -26,6 +26,7 @@
     <Folder Include="Providers\v1\Generic\" />
     <Folder Include="Providers\v2\" />
     <Folder Include="Repositories\v2\" />
+    <Folder Include="Services\v2\" />
   </ItemGroup>
 
   <ItemGroup>

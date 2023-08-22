@@ -25,25 +25,30 @@ namespace KafkaCommunicationLibrary.Producers
         /// <param name="topic"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void Produce(string topic, TKey key, TValue value)
+        public async Task<bool> Produce(string topic, TKey key, TValue value)
         {
             try
             {
-                var deliveryReport = _producer.ProduceAsync(topic, new Message<TKey, TValue> { Key = key, Value = value });
-
-                deliveryReport.ContinueWith(task =>
+                var deliveryReport = await _producer.ProduceAsync(topic, new Message<TKey, TValue> { Key = key, Value = value });
+                if (deliveryReport.Status == PersistenceStatus.Persisted)
                 {
-                    if (task.IsFaulted)
-                    {
-                        _logger.LogError($"Error producing message: {task.Exception}");
-                    }
-                });
+                    Console.WriteLine($"Message delivered to {deliveryReport.TopicPartitionOffset}");
+                    return true; // Message was produced successfully
+                }
+                else
+                {
+                    Console.WriteLine("Message production failed.");
+                    return false; // Message production failed
+                }
+
             }
             catch(ProduceException<TKey, TValue> ex) 
             {
                 _logger.LogError($"Produce error: {ex.Error.Reason}");
+                return false; // Delivery failed
             }
         }
+
         public void Dispose()
         {
             _producer.Dispose();

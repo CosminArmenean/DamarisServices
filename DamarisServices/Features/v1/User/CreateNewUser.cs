@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Damaris.Domain.v1.Dtos.GenericDtos;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Org.BouncyCastle.Crypto.Tls;
+using KafkaCommunicationLibrary.Producers;
+using DamarisServices.Utilities.v1.Generic;
+using KafkaCommunicationLibrary.Consumers;
 
 namespace DamarisServices.Features.v1.User
 {
@@ -19,18 +22,25 @@ namespace DamarisServices.Features.v1.User
 
     public class CreateNewUserHandler : ApiRequestHandler<CreateNewUserRequest, DeliveryResult<string, string>>
     {
-        public CreateNewUserHandler(IProducer<string, string> producer, ILogger watchdogLogger) : base(producer, (ILogger<ApiRequestHandler<CreateNewUserRequest, DeliveryResult<string, string>>>)watchdogLogger) { }
+        public CreateNewUserHandler(KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILogger logger) : base(producer, consumer, logger) { }
                
         public async override Task<DeliveryResult<string, string>> Handle(CreateNewUserRequest request, CancellationToken cancellationToken)
         {
-            request.Payload.Topic = "user-logged-in-topic";
+            request.Payload.Topic = "user-authentication-topic";
             // Log the request to the watchdog logger
-            _watchdogLogger.LogInformation("Sent request to Kafka: {request}", request);
+            _logger.LogInformation("Sent request to Kafka: {request}", request);
             // Create a Message object
+            string key = GenerateHashCode.GetHashCode("test");
+            request.Payload.Key = key;
             Message<string, string> message = new Message<string, string>() {  Key = request.Payload.Key, Value = request.Payload.Value };
 
             // Send the message to Kafka
-            DeliveryResult<string, string> response = await _producer.ProduceAsync(request.Payload.Topic, message, cancellationToken);
+            DeliveryResult<string, string> response = null;
+            var result = await _producer.Produce(request.Payload.Topic, message.Key, message.Value);
+            if (result != null)
+            {
+                var processedData = _consumer.WaitForResponse("user-authentication-topic", key);
+            }
             return response;                  
 
         }

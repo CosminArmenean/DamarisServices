@@ -10,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = builder.Configuration;
 
+//Register the Kafka Consumer and producer
+builder.Services.AddScoped<KafkaConsumer<string, string>>();
+builder.Services.AddScoped<KafkaProducer<string, string>>();
+
+
 // Configure Kafka producer
 builder.Services.AddSingleton(provider =>
 {
