@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using KafkaCommunicationLibrary.Repositories.Interfaces;
 using System.Collections.Concurrent;
 using System.Diagnostics.Metrics;
 using System.Numerics;
@@ -6,7 +7,7 @@ using System.Security.Policy;
 
 namespace KafkaCommunicationLibrary.Producers
 {
-    public class KafkaProducer<TKey, TValue> : IDisposable
+    public class KafkaProducer<TKey, TValue> : IDisposable, IKafkaProducer<TKey, TValue>
     {
         private readonly IProducer<TKey, TValue> _producer;
         private readonly ILogger<KafkaProducer<TKey, TValue>> _logger;
@@ -29,11 +30,12 @@ namespace KafkaCommunicationLibrary.Producers
         {
             try
             {
-                var deliveryReport = await _producer.ProduceAsync(topic, new Message<TKey, TValue> { Key = key, Value = value });
-                if (deliveryReport.Status == PersistenceStatus.Persisted)
+                var deliveryReport = await _producer.ProduceAsync(topic, new Message<TKey, TValue> { Key = key, Value = value, Timestamp = Timestamp.Default });
+                //return await Task.Run(() => true); ; // Message was produced successfully
+                if (deliveryReport.Status == PersistenceStatus.Persisted || deliveryReport.Status == PersistenceStatus.PossiblyPersisted)
                 {
                     Console.WriteLine($"Message delivered to {deliveryReport.TopicPartitionOffset}");
-                    return true; // Message was produced successfully
+                    return await Task.Run(() => true); ; // Message was produced successfully
                 }
                 else
                 {

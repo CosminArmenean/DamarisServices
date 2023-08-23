@@ -4,6 +4,6 @@ namespace KafkaCommunicationLibrary.Repositories.Interfaces
 {
     public interface IKafkaProducer<TKey, TValue>
     {
-        Task PublishAsync(string topic, TKey key, TValue value);
+        Task<bool> Produce(string topic, TKey key, TValue value);
     }
 }

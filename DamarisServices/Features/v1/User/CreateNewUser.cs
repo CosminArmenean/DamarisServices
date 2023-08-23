@@ -22,7 +22,7 @@ namespace DamarisServices.Features.v1.User
 
     public class CreateNewUserHandler : ApiRequestHandler<CreateNewUserRequest, DeliveryResult<string, string>>
     {
-        public CreateNewUserHandler(KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILogger logger) : base(producer, consumer, logger) { }
+        public CreateNewUserHandler(KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory logger) : base(producer, consumer, logger) { }
                
         public async override Task<DeliveryResult<string, string>> Handle(CreateNewUserRequest request, CancellationToken cancellationToken)
         {
@@ -36,7 +36,7 @@ namespace DamarisServices.Features.v1.User
 
             // Send the message to Kafka
             DeliveryResult<string, string> response = null;
-            var result = await _producer.Produce(request.Payload.Topic, message.Key, message.Value);
+            var result = await _producer.Produce(request.Payload.Topic, message.Key, "First message produce by Identity Service!");
             if (result != null)
             {
                 var processedData = _consumer.WaitForResponse("user-authentication-topic", key);

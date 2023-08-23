@@ -18,11 +18,11 @@ namespace DamarisServices.Utilities.v1
         protected readonly KafkaConsumer<string, string> _consumer;
         protected readonly ILogger _logger;
 
-        protected ApiRequestHandler(KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILogger logger)
+        protected ApiRequestHandler(KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory logger)
         {
             _producer = producer;
             _consumer = consumer;
-            _logger = logger;
+            _logger = logger.CreateLogger(GetType());
         }
 
         /// <summary>

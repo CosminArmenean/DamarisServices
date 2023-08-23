@@ -22,6 +22,8 @@ using KafkaCommunicationLibrary.Producers;
 using DamarisServices.Repositories.v1.Implementation.TopicEventsProcessor;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
+using KafkaCommunicationLibrary.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +54,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Add WatchDog Logger
+builder.Services.AddLogging(logging => logging.AddWatchDogLogger());
+
 builder.Services.AddWatchDogServices(opt =>
 {
     opt.IsAutoClear = false;
@@ -132,14 +136,42 @@ builder.Services.AddVersionedApiExplorer(options =>
 //});
 
 //configuring kafka
-var producerConfig = new ProducerConfig();
-builder.Configuration.Bind("Kafka:Producer", producerConfig);
-builder.Services.AddSingleton(producerConfig);
+//var producerConfig = new ProducerConfig();
+//builder.Configuration.Bind("Kafka:Producer", producerConfig);
+//builder.Services.AddSingleton(producerConfig);
 
-var consumerConfig = new ConsumerConfig();
-builder.Configuration.Bind("Kafka:Consumer", consumerConfig);
+//var consumerConfig = new ConsumerConfig();
+//builder.Configuration.Bind("Kafka:Consumer", consumerConfig);
+//builder.Services.AddSingleton(consumerConfig);
+// Kafka ProducerConfig
+// Kafka settings
+KafkaSettings kafkaSettings = builder.Configuration.GetSection("Kafka").Get<KafkaSettings>();
+builder.Services.AddSingleton(kafkaSettings);
+
+// Kafka ConsumerConfig
+ConsumerConfig consumerConfig = new ConsumerConfig
+{
+    BootstrapServers = kafkaSettings.BootstrapServers,
+    GroupId = kafkaSettings.Consumer.GroupId,
+    AutoOffsetReset = kafkaSettings.Consumer.AutoOffsetReset,
+    EnableAutoCommit = kafkaSettings.Consumer.EnableAutoCommit
+    // Other consumer configuration options
+};
 builder.Services.AddSingleton(consumerConfig);
 
+ProducerConfig producerConfig = new ProducerConfig
+{
+    BootstrapServers = kafkaSettings.BootstrapServers,
+    Acks = Acks.None,
+    RetryBackoffMs = kafkaSettings.Producer.RetriesBackoffMs,
+    MaxInFlight = kafkaSettings.Producer.MaxInFlight,
+    EnableDeliveryReports = true,
+    DeliveryReportFields = "key",
+    Partitioner = Partitioner.Consistent
+
+    // Other producer configuration options
+};
+builder.Services.AddSingleton(producerConfig);
 
 builder.Services.AddScoped<KafkaConsumer<string, string>>();
 builder.Services.AddScoped<KafkaProducer<string, string>>();
