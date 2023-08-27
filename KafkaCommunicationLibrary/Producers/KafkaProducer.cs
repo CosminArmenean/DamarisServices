@@ -35,7 +35,7 @@ namespace KafkaCommunicationLibrary.Producers
                 if (deliveryReport.Status == PersistenceStatus.Persisted || deliveryReport.Status == PersistenceStatus.PossiblyPersisted)
                 {
                     Console.WriteLine($"Message delivered to {deliveryReport.TopicPartitionOffset}");
-                    return await Task.Run(() => true); ; // Message was produced successfully
+                    return true; ; // Message was produced successfully
                 }
                 else
                 {

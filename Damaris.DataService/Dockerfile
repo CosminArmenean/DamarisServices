@@ -9,6 +9,7 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+ENV DATABASE_URL=postgres://dataserviceuser:DataServiceUser@localhost:5433/epitomelogger-prod
 WORKDIR /src
 COPY ["Damaris.DataService/Damaris.DataService.csproj", "Damaris.DataService/"]
 RUN dotnet restore "Damaris.DataService/Damaris.DataService.csproj"

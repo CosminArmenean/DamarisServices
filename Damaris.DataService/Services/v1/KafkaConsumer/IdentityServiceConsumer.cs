@@ -1,21 +1,31 @@
 ﻿using Damaris.DataService.Repositories.v1.Interfaces.Contracts;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
+using IKafkaTopicEventProcessor = KafkaCommunicationLibrary.Repositories.Interfaces.IKafkaTopicEventProcessor;
 
 namespace Damaris.DataService.Services.v1.KafkaConsumer
 {
-    public class IdentityServiceConsumer : BackgroundService
-    {        
+    public class IdentityServiceConsumer : BackgroundService, IKafkaTopicEventProcessor, IKafkaConsumer
+    {
+        private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         private readonly IKafkaConsumer _consumer;
-        private readonly ILogger<IdentityServiceConsumer> _logger;       
+        private readonly ILogger<IdentityServiceConsumer> _logger;
+        public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
 
-        private readonly IEnumerable<KafkaCommunicationLibrary.Repositories.Interfaces.IKafkaTopicEventProcessor> _topicEventProcessors;
+        private readonly IEnumerable<IKafkaTopicEventProcessor> _topicEventProcessors;
 
-        public IdentityServiceConsumer(ILogger<IdentityServiceConsumer> logger, IKafkaConsumer consumer, IEnumerable<KafkaCommunicationLibrary.Repositories.Interfaces.IKafkaTopicEventProcessor> topicEventProcessors)
+        public IdentityServiceConsumer(ILogger<IdentityServiceConsumer> logger, IKafkaConsumer consumer, IEnumerable<IKafkaTopicEventProcessor> topicEventProcessors)
         {
             _logger = logger;
             _consumer = consumer;
             // Initialize topic handlers
             _topicEventProcessors = topicEventProcessors;
+        }
+
+       
+
+        public Task<string> ProcessEventAsync<T>(T value)
+        {
+            return Task.FromResult( "I'm here");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,7 +51,7 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                         _logger.LogInformation($"Received Kafka message on topic '{topic}': {message}");
 
                         // Process the received message using the topic event processor
-                        await processor.ProcessEventAsync(message);
+                        string response = await processor.ProcessEventAsync(message);
 
                         _logger.LogInformation($"Kafka message on topic '{topic}' processed successfully.");
                     }
@@ -51,6 +61,16 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                     }
                 }, stoppingToken);
             }
+        }
+
+        public Task ConsumeAsync(string topic, Action<string> processMessage, CancellationToken cancellationToken)
+        {
+            return null;
+        }
+
+        public Task<string> WaitForResponse(string responseTopic, string key)
+        {
+            return Task.FromResult("I'm here");
         }
     }
 }

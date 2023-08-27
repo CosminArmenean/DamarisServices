@@ -135,15 +135,7 @@ builder.Services.AddVersionedApiExplorer(options =>
 //    options.InstanceName = "IdentityMicroservice:";
 //});
 
-//configuring kafka
-//var producerConfig = new ProducerConfig();
-//builder.Configuration.Bind("Kafka:Producer", producerConfig);
-//builder.Services.AddSingleton(producerConfig);
 
-//var consumerConfig = new ConsumerConfig();
-//builder.Configuration.Bind("Kafka:Consumer", consumerConfig);
-//builder.Services.AddSingleton(consumerConfig);
-// Kafka ProducerConfig
 // Kafka settings
 KafkaSettings kafkaSettings = builder.Configuration.GetSection("Kafka").Get<KafkaSettings>();
 builder.Services.AddSingleton(kafkaSettings);
@@ -179,12 +171,7 @@ builder.Services.AddScoped<KafkaProducer<string, string>>();
 //Register the topic event processors as scoped services:
 builder.Services.AddScoped<IKafkaTopicEventProcessor, LoginEventProcessor>();
 
-//builder.Services.AddTransient<IUserService, UserService>();
-//builder.Services.AddHttpClient<IKafkaService, KafkaServiceClient>(client =>
-//{
-//    client.BaseAddress = new Uri(Configuration["KafkaServiceConfig:BaseUri"]);
-//});
-//builder.Services.AddScoped<IProducer, >
+
 //Add MediatR           
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
