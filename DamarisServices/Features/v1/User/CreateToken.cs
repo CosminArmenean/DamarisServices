@@ -34,7 +34,7 @@ namespace DamarisServices.Features.v1.User
             request.KafkaRecord.Key = key;
             // Send the message to Kafka
             DeliveryResult<string, string> response = null;
-            var result = await _producer.Produce(request.KafkaRecord.Topic, request.KafkaRecord.Key, "First message produce by Identity Service!");
+            var result = await _producer.Produce(request.KafkaRecord.Topic, request.KafkaRecord.Key, "First message produce by Identity Service  !");
             if (result != null)
             {
                 var processedData = _consumer.WaitForResponse("user-authentication-topic", request.KafkaRecord.Key);

@@ -8,7 +8,9 @@ using KafkaCommunicationLibrary.Domain.Models;
 using KafkaCommunicationLibrary.Producers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Crypto.Tls;
 using System.Configuration;
+using System.Reflection;
 using WatchDog;
 using WatchDog.src.Enums;
 
@@ -77,19 +79,34 @@ ProducerConfig producerConfig = new ProducerConfig
 };
 builder.Services.AddSingleton(producerConfig);
 
-//Add background services
-builder.Services.AddSingleton<IdentityServiceConsumer>();
 
+//builder.Services.AddHostedService<IdentityServiceConsumer>();
 
-builder.Services.AddScoped<KafkaConsumer<string, string>>();
+//builder.Services.AddScoped<KafkaConsumer<string, string>>();
 builder.Services.AddScoped<KafkaProducer<string, string>>();
 
-builder.Services.AddSingleton<IKafkaConsumer>(provider => provider.GetRequiredService<IdentityServiceConsumer>());
-
-
+//Add background services
+//builder.Services.AddScoped<IdentityServiceConsumer>();
+// Change scoped to singleton if appropriate
+//builder.Services.AddScoped<KafkaConsumer<string, string>>();
+//builder.Services.AddScoped<IKafkaConsumer<string, string>, KafkaConsumer<string, string>>();
 //Register the topic event processors as scoped services:
-builder.Services.AddScoped<Damaris.DataService.Repositories.v1.Interfaces.Contracts.IKafkaTopicEventProcessor, LoginEventProcessor>();
+builder.Services.AddSingleton<KafkaCommunicationLibrary.Repositories.Interfaces.IKafkaTopicEventProcessor<string>, LoginEventProcessor>();
 
+builder.Services.AddHostedService<IdentityServiceConsumer>();
+builder.Services.AddSingleton<IdentityServiceConsumer>();
+builder.Services.AddSingleton<KafkaConsumer<string, string>>();
+
+//Add background services
+//builder.Services.AddSingleton<IHostedService, IdentityServiceConsumer>();
+
+//builder.Services.AddSingleton<IKafkaConsumer<string, string>, KafkaConsumer<string, string>>();
+//builder.Services.AddSingleton<IKafkaConsumer>(provider => provider.GetRequiredService<IdentityServiceConsumer>());
+
+
+
+//Add MediatR           
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 var app = builder.Build();
 

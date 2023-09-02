@@ -1,8 +1,11 @@
-﻿namespace KafkaCommunicationLibrary.Repositories.Interfaces
+﻿using Confluent.Kafka;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+
+namespace KafkaCommunicationLibrary.Repositories.Interfaces
 {
-    public interface IKafkaConsumer
+    public interface IKafkaConsumer<TKey, TValue>
     {
-        Task ConsumeAsync(string topic, Action<string> processMessage, CancellationToken cancellationToken);
-        Task<string> WaitForResponse(string responseTopic, string key);
+        ConsumeResult<TKey, TValue> Consume();
+        Task<ConsumeResult<TKey, TValue>> WaitForResponse(string responseTopic, TKey key, TValue value);
     }
 }

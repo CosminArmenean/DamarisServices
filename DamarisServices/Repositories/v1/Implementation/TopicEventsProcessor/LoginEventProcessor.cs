@@ -4,7 +4,7 @@ using KafkaCommunicationLibrary.Repositories.Interfaces;
 
 namespace DamarisServices.Repositories.v1.Implementation.TopicEventsProcessor
 {
-    public class LoginEventProcessor : IKafkaTopicEventProcessor
+    public class LoginEventProcessor : IKafkaTopicEventProcessor<string>
     {
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
@@ -17,7 +17,7 @@ namespace DamarisServices.Repositories.v1.Implementation.TopicEventsProcessor
 
         //}
 
-        public async Task<string> ProcessEventAsync<T>(T value)
+        public async Task<string> ProcessEventAsync<T>(string topic, T value)
         {
             // Handle login event logic
             //await Task.Delay(TimeSpan.FromSeconds(2)); // Simulate processing time

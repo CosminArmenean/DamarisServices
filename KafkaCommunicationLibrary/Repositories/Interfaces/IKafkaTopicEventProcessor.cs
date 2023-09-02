@@ -1,9 +1,9 @@
 ﻿namespace KafkaCommunicationLibrary.Repositories.Interfaces
 {
-    public interface IKafkaTopicEventProcessor
+    public interface IKafkaTopicEventProcessor<T>
     {
         string Topic { get; }
-        Task<string> ProcessEventAsync<T>(T value);
+        Task<string> ProcessEventAsync<T>(string topic, T value);
         
     }
 }

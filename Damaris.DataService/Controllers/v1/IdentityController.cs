@@ -1,6 +1,9 @@
 ﻿using Confluent.Kafka;
 using Damaris.DataService.Utilities.v1;
 using Damaris.Domain.v1.Dtos.GenericDtos;
+using KafkaCommunicationLibrary.Consumers;
+using KafkaCommunicationLibrary.Producers;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Damaris.DataService.Controllers.v1
@@ -10,14 +13,12 @@ namespace Damaris.DataService.Controllers.v1
         private readonly IProducer<string, string> _producer;
         private readonly IConsumer<string, string> _consumer;
         private readonly ILogger<ApiBaseController> _watchLogger;
-        public IdentityController(IProducer<string, string> producer, IConsumer<string, string> consumer, ILogger<ApiBaseController> logger) : base(producer, consumer, logger)
-        {
-            _producer = producer;
-            _consumer = consumer;
+        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory) : base(mediator, producer, consumer, loggerFactory)
+        {        
         }
 
         [HttpPost("/process-register")]
-        public async Task ProcessRegisterAsync()
+        public async Task<IActionResult> ProcessRegisterAsync()
         {
             try
             {
@@ -25,7 +26,7 @@ namespace Damaris.DataService.Controllers.v1
                 //var consumerRecord = new ConsumerRecord<string, string>("topic", 0, 0, "dummy data");
 
                 // Consume the message from Kafka
-               // var task = await _consumer.ConsumeAsync(consumerRecord);
+                // var task = await _consumer.ConsumeAsync(consumerRecord);
 
                 //// Do something with the message
                 //if (task.IsCompletedSuccessfully)
@@ -44,11 +45,13 @@ namespace Damaris.DataService.Controllers.v1
 
                 // Do something with the register request
                 // ...
+                return await  Task.FromResult( Ok());
             }
             catch (Exception ex)
             {
                 // Handle the exception
                 _watchLogger.LogError(ex, "Failed to process register request");
+                return await Task.FromResult(Ok());
             }
         }
     }

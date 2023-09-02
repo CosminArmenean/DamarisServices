@@ -169,7 +169,7 @@ builder.Services.AddScoped<KafkaConsumer<string, string>>();
 builder.Services.AddScoped<KafkaProducer<string, string>>();
 
 //Register the topic event processors as scoped services:
-builder.Services.AddScoped<IKafkaTopicEventProcessor, LoginEventProcessor>();
+builder.Services.AddScoped<IKafkaTopicEventProcessor<string>, LoginEventProcessor>();
 
 
 //Add MediatR           

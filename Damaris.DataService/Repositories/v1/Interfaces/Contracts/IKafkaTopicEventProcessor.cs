@@ -1,8 +1,8 @@
 ﻿namespace Damaris.DataService.Repositories.v1.Interfaces.Contracts
 {
-    public interface IKafkaTopicEventProcessor
+    public interface IKafkaTopicEventProcessor<T>
     {
         string Topic { get; }
-        Task ProcessEventAsync(string message);
+        Task<string> ProcessEventAsync(T message);
     }
 }
