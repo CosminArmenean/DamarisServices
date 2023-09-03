@@ -45,13 +45,13 @@ namespace DamarisServices.Controllers.v1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
-            ApplicationUser user = new() {  UserName = "Cosmin", PasswordHash = "test"};
+            ApplicationUser user = new() {   UserName = "Cosmin", PasswordHash = "test"};
             //user = await _userManager.FindByNameAsync(model.UserName);
             ////if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             
             //{
             //GenerateJwtToken
-               var token = await HandleRequestAsync(new CreateTokenRequest() { User = user, KafkaRecord = new Damaris.Domain.v1.Dtos.GenericDtos.ProducerRecord() { Topic = "user-authentication-topic" } });
+               var login = await HandleRequestAsync(new CreateLoginRequest() {  LoginRequest = model });
             // Wait for response from Kafka topic
             
 

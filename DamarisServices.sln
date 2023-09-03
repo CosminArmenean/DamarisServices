@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaCommunicationLibrary",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Damaris.Domain", "Damaris.Domain\Damaris.Domain.csproj", "{22C33E75-ED3B-48B6-A677-8F8E59173B50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damaris.DataService", "Damaris.DataService\Damaris.DataService.csproj", "{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Damaris.DataService", "Damaris.DataService\Damaris.DataService.csproj", "{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damaris.Common", "Damaris.Common\Damaris.Common.csproj", "{6793A393-EEFA-40DF-BA8F-801AB684DC6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +45,10 @@ Global
 		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6793A393-EEFA-40DF-BA8F-801AB684DC6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6793A393-EEFA-40DF-BA8F-801AB684DC6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6793A393-EEFA-40DF-BA8F-801AB684DC6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6793A393-EEFA-40DF-BA8F-801AB684DC6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{96B95BC8-42F3-4EA2-9A35-ACD7560AB7D8} = {AB28B837-9C89-493D-899B-4009EEE76D34}
 		{22C33E75-ED3B-48B6-A677-8F8E59173B50} = {AB28B837-9C89-493D-899B-4009EEE76D34}
 		{D7FC158D-6D36-4AE5-91B7-6CDCA2F39DAB} = {AB28B837-9C89-493D-899B-4009EEE76D34}
+		{6793A393-EEFA-40DF-BA8F-801AB684DC6C} = {AB28B837-9C89-493D-899B-4009EEE76D34}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F6DB3C1-E19E-488D-BABE-3B03F70AB1A9}
