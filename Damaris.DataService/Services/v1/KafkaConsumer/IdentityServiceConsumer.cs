@@ -1,36 +1,60 @@
 ﻿using Confluent.Kafka;
-using Damaris.DataService.Repositories.v1.Interfaces.Contracts;
+using Damaris.Common.v1.CommonUtilities.JsonUtilities;
+using Damaris.Common.v1.Constants;
+using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
+using DnsClient;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Org.BouncyCastle.Crypto.Tls;
 using StackExchange.Redis;
-using IKafkaTopicEventProcessor = KafkaCommunicationLibrary.Repositories.Interfaces.IKafkaTopicEventProcessor<string>;
+using System.Linq.Expressions;
 
 namespace Damaris.DataService.Services.v1.KafkaConsumer
 {
-    public class IdentityServiceConsumer : BackgroundService, IKafkaTopicEventProcessor
+    public class IdentityServiceConsumer : BackgroundService, IKafkaTopicProcessor<ConsumeResult<string, string>>
     {
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         private readonly KafkaConsumer<string, string> _consumer;
         private readonly ILogger<IdentityServiceConsumer> _logger;
         public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
 
-        private readonly IEnumerable<IKafkaTopicEventProcessor> _topicEventProcessors;
+        private readonly IEnumerable<IKafkaTopicEventProcessor<string, string>> _topicEventProcessors;
 
-        public IdentityServiceConsumer(ILogger<IdentityServiceConsumer> logger, KafkaConsumer<string, string> consumer, IEnumerable<IKafkaTopicEventProcessor> topicEventProcessors)
+        public IdentityServiceConsumer(ILogger<IdentityServiceConsumer> logger, KafkaConsumer<string, string> consumer, IEnumerable<IKafkaTopicEventProcessor<string, string>> topicProcessors)
         {
             _logger = logger;
             _consumer = consumer;
             // Initialize topic handlers
-            _topicEventProcessors = topicEventProcessors;
+            _topicEventProcessors = topicProcessors;
         }
 
        
 
-        public Task<string> ProcessEventAsync<T>(string topic, T value)
+        public async Task<ConsumeResult<string, string>> ProcessEventAsync(string eventType, string key, string message)
         {
-            return Task.FromResult( "I'm here");
+            ConsumeResult<string, string> response = null;
+            try
+            {
+                if (eventType == EventTypes.LOGIN)
+                {
+                    
+                }
+                else if (eventType == EventTypes.LOGOUT)
+                {
+
+                }
+                else
+                {
+
+                }
+                return await Task.FromResult(response); ;
+            }
+            catch (Exception ex)
+            {
+                return response;
+                _logger.LogInformation($"IdentityServiceConsumer logged error on Process Event: {ex}");
+            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -45,43 +69,42 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
 
         private async Task ConsumeKafkaMessages(CancellationToken stoppingToken)
         {
-            Parallel.ForEach(_topicEventProcessors, async processor =>
+            foreach(var processor in _topicEventProcessors)
             {
                 var topic = processor.Topic;
+                _consumer.Subscribe(topic);
                 try
                 {
-                    
-                    _consumer.Subscribe(topic);
-                    ConsumeResult<string, string>? consumeResult = _consumer.Consume();
-                    var jsonLoginEvent = consumeResult.Message.Value;
-                    _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
-                    // Process the received message using the topic event processor
-                    //if(jsonLoginEvent)
-                    string response = await processor.ProcessEventAsync(topic, consumeResult);
+                    while (!stoppingToken.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            ConsumeResult<string, string>? consumeResult = _consumer.Consume();
+                            var jsonLoginEvent = consumeResult.Message.Value;
+                            _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
+                            // Process the received message using the topic event processor
+                            string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
+
+                            var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // Handle cancellation if needed
+                            _logger.LogInformation("Kafka message consumption canceled.");
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, $"Error processing Kafka message on topic '{topic}'.");
+                        }                        
+                    }                    
                 }
                 catch (Exception ex)
                 {
 
                     _logger.LogError(ex, $"Error processing Kafka message on topic '{topic}'.");
-                }
-                
-                //await _consumer.ConsumeAsync(topic, async message =>
-                //{
-                //    try
-                //    {
-                //        _logger.LogInformation($"Received Kafka message on topic '{topic}': {message}");
-
-                //        // Process the received message using the topic event processor
-                //        string response = await processor.ProcessEventAsync(topic, message);
-
-                //        _logger.LogInformation($"Kafka message on topic '{topic}' processed successfully.");
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        _logger.LogError(ex, $"Error processing Kafka message on topic '{topic}'.");
-                //    }
-                //}, stoppingToken);
-            });
+                }    
+            }
         }
 
         public Task ConsumeAsync(string topic, Action<string> processMessage, CancellationToken cancellationToken)

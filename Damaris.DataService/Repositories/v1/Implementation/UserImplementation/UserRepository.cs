@@ -1,5 +1,4 @@
-﻿using Damaris.DataService.Repositories.v1.Interfaces.Contracts;
-using Damaris.DataService.Repositories.v1.Interfaces.Generic;
+﻿using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.Domain.v1.Dtos.GenericDtos;
 using Damaris.Domain.v1.Dtos.UserDtos;
@@ -60,6 +59,10 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
             throw new NotImplementedException();
         }
 
-        
+        public Task<User> GetUserByEmail(string email) 
+        {
+            return null;
+        }
+
     }
 }

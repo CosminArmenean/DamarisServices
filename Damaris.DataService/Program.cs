@@ -1,7 +1,7 @@
 using Confluent.Kafka;
 using Damaris.DataService.Domain.v1.Models.Generic;
 using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
-using Damaris.DataService.Repositories.v1.Interfaces.Contracts;
+using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.DataService.Services.v1.KafkaConsumer;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Domain.Models;
@@ -79,7 +79,7 @@ ProducerConfig producerConfig = new ProducerConfig
 };
 builder.Services.AddSingleton(producerConfig);
 
-
+builder.Services.AddScoped<IUserRepository, IUserRepository>();
 //builder.Services.AddHostedService<IdentityServiceConsumer>();
 
 //builder.Services.AddScoped<KafkaConsumer<string, string>>();
@@ -91,11 +91,13 @@ builder.Services.AddScoped<KafkaProducer<string, string>>();
 //builder.Services.AddScoped<KafkaConsumer<string, string>>();
 //builder.Services.AddScoped<IKafkaConsumer<string, string>, KafkaConsumer<string, string>>();
 //Register the topic event processors as scoped services:
-builder.Services.AddSingleton<KafkaCommunicationLibrary.Repositories.Interfaces.IKafkaTopicEventProcessor<string>, LoginEventProcessor>();
+builder.Services.AddSingleton<IKafkaTopicEventProcessor<string, string>, LoginEventProcessor>();
 
 builder.Services.AddHostedService<IdentityServiceConsumer>();
 builder.Services.AddSingleton<IdentityServiceConsumer>();
 builder.Services.AddSingleton<KafkaConsumer<string, string>>();
+
+
 
 //Add background services
 //builder.Services.AddSingleton<IHostedService, IdentityServiceConsumer>();

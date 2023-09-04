@@ -44,6 +44,8 @@ namespace Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces
         /// <returns></returns>
         Task GetUserAsync(Guid userId);
 
+        Task<User> GetUserByEmail(string email);
+
         /// <summary>
         /// This method retrieve users active user from database and return as IEnumerable list.
         /// </summary>       

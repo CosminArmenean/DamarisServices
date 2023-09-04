@@ -1,9 +1,11 @@
-﻿namespace KafkaCommunicationLibrary.Repositories.Interfaces
+﻿using Confluent.Kafka;
+
+namespace KafkaCommunicationLibrary.Repositories.Interfaces
 {
-    public interface IKafkaTopicEventProcessor<T>
+    public interface IKafkaTopicEventProcessor<TKey, TValue>
     {
         string Topic { get; }
-        Task<string> ProcessEventAsync<T>(string topic, T value);
+        Task<ConsumeResult<TKey, TValue>> ProcessEventAsync(string eventType, TKey key, TValue value);
         
     }
 }

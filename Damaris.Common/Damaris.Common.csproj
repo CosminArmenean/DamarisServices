@@ -6,4 +6,19 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="v1\DataAccess\" />
+    <Folder Include="v1\Extensions\" />
+    <Folder Include="v1\Services\" />
+    <Folder Include="v2\CommonUtilities\JsonUtilities\" />
+    <Folder Include="v2\DataAccess\" />
+    <Folder Include="v2\Extensions\" />
+    <Folder Include="v2\Constants\" />
+    <Folder Include="v2\Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
 </Project>

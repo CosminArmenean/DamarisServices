@@ -27,11 +27,13 @@
     <Folder Include="Data\v2\" />
     <Folder Include="Providers\v1\Generic\" />
     <Folder Include="Providers\v2\" />
+    <Folder Include="Repositories\v1\Interfaces\Contracts\" />
     <Folder Include="Repositories\v2\" />
     <Folder Include="Services\v2\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Damaris.Common\Damaris.Common.csproj" />
     <ProjectReference Include="..\Damaris.Domain\Damaris.Domain.csproj" />
     <ProjectReference Include="..\KafkaCommunicationLibrary\KafkaCommunicationLibrary.csproj" />
     <ProjectReference Include="..\LanguageService\LanguageService.csproj" />
