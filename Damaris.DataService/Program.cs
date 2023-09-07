@@ -1,4 +1,5 @@
 using Confluent.Kafka;
+using Damaris.DataService.Data.v1;
 using Damaris.DataService.Domain.v1.Models.Generic;
 using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
@@ -7,8 +8,7 @@ using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Domain.Models;
 using KafkaCommunicationLibrary.Producers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Crypto.Tls;
+using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using System.Reflection;
 using WatchDog;
@@ -47,7 +47,8 @@ builder.Services.AddWatchDogServices(opt =>
     opt.DbDriverOption = WatchDogDbDriverEnum.PostgreSql;
 });
 
-
+//Initializing my DbContext inside the DI Container
+builder.Services.AddDbContext<OfficerDbContext>(options => options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2)));
 
 
 // Kafka settings

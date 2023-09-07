@@ -29,7 +29,7 @@ namespace DamarisServices.Features.v1.User
             var jsonLoginEvent = JsonConvert.SerializeObject(request);
 
             //create a hash code based on email/username for identifier 
-            string key = GenerateHashCode.GetHashCode(request.LoginRequest.UserName.ToString());
+            string key = GenerateHashCode.GetHashCode(request.LoginRequest.Email.ToString());
             //request.KafkaRecord.Key = key;
 
             //Create a object to store the response
