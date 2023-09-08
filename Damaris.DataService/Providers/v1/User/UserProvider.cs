@@ -1,4 +1,5 @@
-﻿using Damaris.DataService.Repositories.v1;
+﻿using AutoMapper;
+using Damaris.DataService.Repositories.v1;
 using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.Domain.v1.Models.Account;
 using Dapper;
@@ -22,7 +23,7 @@ namespace Damaris.DataService.Providers.v1.User
         /// </summary>
         /// <param name="loggerFactory"></param>
         /// <param name="connectionFactory"></param>
-        public UserProvider(ILoggerFactory loggerFactory, IDatabaseConnectionFactory connectionFactory) : base(loggerFactory, connectionFactory)
+        public UserProvider(ILoggerFactory loggerFactory, IUnitOfWork unitOfWork, IMapper mapper) : base(loggerFactory, unitOfWork, mapper)
         {
 
         }
@@ -40,7 +41,7 @@ namespace Damaris.DataService.Providers.v1.User
         public async Task<IEnumerable<ApplicationUser>> GetAllUsers()
         {
             var command = "SELECT * FROM AspNetUsers;";
-            await using MySqlConnection? mySqlConnection = await _connectionFactory.CreateConnectionAsync();
+            await using MySqlConnection? mySqlConnection = null;//await _connectionFactory.CreateConnectionAsync();
 
             return await mySqlConnection.QueryAsync<ApplicationUser>(command);
         }
@@ -53,7 +54,7 @@ namespace Damaris.DataService.Providers.v1.User
         /// <returns></returns>
         public async Task<ApplicationUser> FindByPhoneNumberAsync(string phoneNumber)
         {
-            await using MySqlConnection mySqlConnection = await _connectionFactory.CreateConnectionAsync();
+            await using MySqlConnection mySqlConnection = null;// await _connectionFactory.CreateConnectionAsync();
             return await mySqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(SP_GET_APPLICATION_USER_BY_PHONE, new
             {
                 PhoneNumberVal = phoneNumber

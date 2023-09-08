@@ -1,7 +1,11 @@
 using Confluent.Kafka;
 using Damaris.DataService.Data.v1;
 using Damaris.DataService.Domain.v1.Models.Generic;
+using Damaris.DataService.Repositories.v1;
+using Damaris.DataService.Repositories.v1.BusinessRoutines;
 using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
+using Damaris.DataService.Repositories.v1.Implementation.UserImplementation;
+using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.DataService.Services.v1.KafkaConsumer;
 using KafkaCommunicationLibrary.Consumers;
@@ -47,8 +51,14 @@ builder.Services.AddWatchDogServices(opt =>
     opt.DbDriverOption = WatchDogDbDriverEnum.PostgreSql;
 });
 
+//Initialize AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 //Initializing my DbContext inside the DI Container
 builder.Services.AddDbContext<OfficerDbContext>(options => options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2)));
+//builder.Services.AddDbContext<UserDataContext>(options => options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2)));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 // Kafka settings
@@ -80,7 +90,7 @@ ProducerConfig producerConfig = new ProducerConfig
 };
 builder.Services.AddSingleton(producerConfig);
 
-builder.Services.AddScoped<IUserRepository, IUserRepository>();
+//builder.Services.AddScoped<IUserRepository, IUserRepository>();
 //builder.Services.AddHostedService<IdentityServiceConsumer>();
 
 //builder.Services.AddScoped<KafkaConsumer<string, string>>();

@@ -19,7 +19,7 @@ namespace Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task CreateNewUserAsync(List<RegisterUserDto>? user, bool twoUser = false);
+        Task CreateNewUserAsync(List<Damaris.Domain.v1.Models.User.RegisterUser>? user, bool twoUser = false);
 
 
         /// <summary>
@@ -50,6 +50,6 @@ namespace Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces
         /// This method retrieve users active user from database and return as IEnumerable list.
         /// </summary>       
         /// <returns></returns>
-        Task GetUsersAsync();
+        Task<IEnumerable<User>> GetUsersAsync();
     }
 }

@@ -49,7 +49,7 @@ namespace Damaris.DataService.Repositories.v1
             _connectionFactory = ConnectionFactory;
 
             // Initialize the business routine classes            
-            UserRoutines.Init(_logger, _connectionFactory);
+         //   UserDataContext.Init(_logger, _connectionFactory);
 
             // Initialize the identity with dapper stores
 

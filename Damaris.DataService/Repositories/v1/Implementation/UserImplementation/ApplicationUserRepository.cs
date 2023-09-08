@@ -1,4 +1,5 @@
-﻿using Damaris.DataService.Providers.v1.User;
+﻿using AutoMapper;
+using Damaris.DataService.Providers.v1.User;
 using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.Domain.v1.Models.Account;
@@ -21,9 +22,9 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 
          #region ==================== [Constructor] =========================
 
-         public ApplicationUserRepository(ILoggerFactory loggerFactory, IDatabaseConnectionFactory connectionFactory) : base(loggerFactory, connectionFactory)
+         public ApplicationUserRepository(ILoggerFactory loggerFactory, IUnitOfWork unitOfWork, IMapper mapper) : base(loggerFactory, unitOfWork, mapper)
          {
-             _usersTable = new UserProvider(loggerFactory, connectionFactory);
+            // _usersTable = new UserProvider(loggerFactory, connectionFactory);
          }
 
          #endregion ==================== [Constructor] =========================

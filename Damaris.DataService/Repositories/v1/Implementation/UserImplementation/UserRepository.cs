@@ -1,8 +1,11 @@
-﻿using Damaris.DataService.Repositories.v1.Interfaces.Generic;
+﻿using AutoMapper;
+using Damaris.DataService.Data.v1;
+using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.Domain.v1.Dtos.GenericDtos;
 using Damaris.Domain.v1.Dtos.UserDtos;
 using Damaris.Domain.v1.Models.User;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,7 +17,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 {
     public class UserRepository : BaseRepository, IUserRepository
     {
-       
+        private readonly IUserDataContext _userDataContext;
         //procedures names
         #region ================ [Procedures] =========================
 
@@ -30,23 +33,30 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
         /// </summary>
         /// <param name="loggerFactory"></param>
         /// <param name="connectionString"></param>
-        public UserRepository(ILoggerFactory loggerFactory, IDatabaseConnectionFactory connectionFactory) : base(loggerFactory, connectionFactory) { }
+        public UserRepository(ILoggerFactory loggerFactory, IUnitOfWork unitOfWork, IMapper mapper) : base(loggerFactory, unitOfWork, mapper) 
+        {
+            //_userDataContext = userDataContext;
+        }
 
-        
-
+                
         public Task ApplyUserPatchAsync<TEntity>(TEntity? entity, List<PatchDto>? patchDto) where TEntity : User
         {
             throw new NotImplementedException();
         }
 
-        public Task CreateNewUserAsync(List<RegisterUserDto>? user, bool twoUser = false)
+        public Task CreateNewUserAsync(List<Damaris.Domain.v1.Dtos.UserDtos.RegisterUserDto>? user, bool twoUser = false)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeactivateUserAsync(Guid userId)
+        public async Task DeactivateUserAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var user = await _userDataContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user != null)
+            {
+                _userDataContext.Users.Remove(user);
+               // await _userDataContext.SaveChangesAsync();
+            }            
         }
 
         public Task GetUserAsync(Guid userId)
@@ -54,15 +64,29 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
             throw new NotImplementedException();
         }
 
-        public Task GetUsersAsync()
+        public async Task<IEnumerable<User>> GetUsersAsync()
+        {
+            try
+            {
+                //return await DbSet.Where
+                return null;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<User> GetUserByEmail(string email) 
+        {
+            return await _userDataContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        }
+
+        public Task CreateNewUserAsync(List<Damaris.Domain.v1.Models.User.RegisterUser>? user, bool twoUser = false)
         {
             throw new NotImplementedException();
         }
-
-        public Task<User> GetUserByEmail(string email) 
-        {
-            return null;
-        }
-
     }
 }

@@ -19,19 +19,19 @@ namespace Damaris.Domain.v1.Dtos.UserExtension
         /// <param name="countryId"></param>
         /// <param name="linkedUserCountryId"></param>
         /// <returns></returns>
-        public static List<RegisterUserDto?>? RegisterUserDtoAsRegisterUser(this RegisterUser registerUser, List<int>? countrysIds = null, List<string>? guids = null)
+        public static List<UserDtos.RegisterUser?>? RegisterUserDtoAsRegisterUser(this Models.User.RegisterUserDto registerUser, List<int>? countrysIds = null, List<string>? guids = null)
         {
             if (registerUser == null) //checking if is null in this case we will return null 
             {
                 return null;
             }
-            List<RegisterUserDto?> registerUserList = new();
+            List<UserDtos.RegisterUser?> registerUserList = new();
             Guid guid = guids != null ? new Guid(guids[0]) : Guid.NewGuid();
             Guid guidLinkedUser = countrysIds.Count > 1 ? new Guid(guids[1]) : Guid.NewGuid();
-            RegisterUserDto? user = new();
-            RegisterUserDto? linkedUser = new();
+            UserDtos.RegisterUser? user = new();
+            UserDtos.RegisterUser? linkedUser = new();
             //casting objects to RegisterUser object
-            user = new RegisterUserDto()
+            user = new UserDtos.RegisterUser()
             {
                 UserId = guid,
                 FirstName = registerUser?.FirstName,
@@ -49,7 +49,7 @@ namespace Damaris.Domain.v1.Dtos.UserExtension
             };
             if (registerUser.RegisterTwoUser && registerUser.LinkedUser != null)
             {
-                linkedUser = new RegisterUserDto()
+                linkedUser = new UserDtos.RegisterUser()
                 {
                     UserId = guidLinkedUser,
                     FirstName = registerUser.LinkedUser.FirstName,
