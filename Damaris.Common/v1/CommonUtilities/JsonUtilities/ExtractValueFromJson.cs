@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Damaris.Common.v1.CommonUtilities.JsonUtilities
@@ -24,20 +23,20 @@ namespace Damaris.Common.v1.CommonUtilities.JsonUtilities
                 // Deserialize the JSON to a JObject
                 JObject jsonObject = JsonConvert.DeserializeObject<JObject>(serializedJson);
 
-                // Use the attributeName to access the corresponding property in the JSON
-                JToken attributeValue = jsonObject[attribute];
-                // Check if the attribute exists and is a string
-                if (attributeValue != null && attributeValue.Type == JTokenType.String)
+                // Check if the "LoginRequest" object exists in the JSON
+                if (jsonObject.TryGetValue("LoginRequest", out var loginRequest) && loginRequest.Type == JTokenType.Object)
                 {
-                    return attributeValue.Value<string>();
+                    // Check if the "RequestType" attribute exists within the "LoginRequest" object
+                    if (loginRequest[attribute] is JValue requestType && requestType.Type == JTokenType.String)
+                    {
+                        return requestType.Value<string>();
+                    }
                 }
-                else
-                {
-                    // Attribute doesn't exist or is not a string
-                    return "unknown";
-                }
+
+                // If any condition fails, return "unknown"
+                return "unknown";
             }
-            catch (System.Text.Json.JsonException ex)
+            catch (JsonReaderException ex)
             {
                 // Handle JSON parsing errors, if any
                 Console.WriteLine($"JSON parsing error: {ex.Message}");

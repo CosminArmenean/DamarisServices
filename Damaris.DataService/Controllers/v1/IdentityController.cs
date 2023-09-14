@@ -1,4 +1,6 @@
-﻿using Confluent.Kafka;
+﻿using AutoMapper;
+using Confluent.Kafka;
+using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Utilities.v1;
 using Damaris.Domain.v1.Dtos.GenericDtos;
 using KafkaCommunicationLibrary.Consumers;
@@ -13,7 +15,10 @@ namespace Damaris.DataService.Controllers.v1
         private readonly IProducer<string, string> _producer;
         private readonly IConsumer<string, string> _consumer;
         private readonly ILogger<ApiBaseController> _watchLogger;
-        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory) : base(mediator, producer, consumer, loggerFactory)
+        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
+        public IdentityController(ILoggerFactory loggerFactory, IMediator mediator, IUnitOfWork unitOfWork, IMapper mapper, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer) : base(loggerFactory, mediator, unitOfWork, mapper, producer, consumer)
         {        
         }
 

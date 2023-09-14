@@ -31,9 +31,9 @@ namespace Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcesso
                     var loginData = JsonConvert.DeserializeObject<LoginRequest>(message);
 
                     // Retrieve the user from the database by username
-                    var user = await _userRepository.GetUserByEmail(loginData.Email);
+                    var user = await _userRepository.GetUserByEmailAsync(loginData.Email);
 
-                    if (user != null && VerifyPassword(loginData.Password, user.PasswordHash))
+                    if (user != null && VerifyPassword(loginData.Password, ""))
                     {
                         // Authentication successful
                         result.Message.Value = "Authentication successful";

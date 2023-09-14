@@ -7,6 +7,8 @@ using Org.BouncyCastle.Crypto.Tls;
 using KafkaCommunicationLibrary.Producers;
 using DamarisServices.Utilities.v1.Generic;
 using KafkaCommunicationLibrary.Consumers;
+using Damaris.Domain.v1.Dtos.Requests.Account;
+using Newtonsoft.Json;
 
 namespace DamarisServices.Features.v1.User
 {
@@ -15,33 +17,39 @@ namespace DamarisServices.Features.v1.User
     /// </summary>
     public class CreateNewUserRequest : ApiRequest<DeliveryResult<string, string>>
     {
-        public string UserId { get; init; }
-        public string Password { get; init; }
-        public ProducerRecord Payload { get; set;}
+        public AccountRegistrationRequestDto AccountRegistration { get; init; }        
+        
     }
 
     public class CreateNewUserHandler : ApiRequestHandler<CreateNewUserRequest, DeliveryResult<string, string>>
     {
+        private readonly string Topic = "user-registration-topic";
+        private readonly string ResponseTopic = "user-registration-response-topic";
         public CreateNewUserHandler(KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory logger) : base(producer, consumer, logger) { }
                
         public async override Task<DeliveryResult<string, string>> Handle(CreateNewUserRequest request, CancellationToken cancellationToken)
         {
-            request.Payload.Topic = "user-authentication-topic";
             // Log the request to the watchdog logger
-            _logger.LogInformation("Sent request to Kafka: {request}", request);
-            // Create a Message object
-            string key = GenerateHashCode.GetHashCode("test");
-            request.Payload.Key = key;
-            Message<string, string> message = new Message<string, string>() {  Key = request.Payload.Key, Value = request.Payload.Value };
+            _logger.LogInformation("Preparing request to Kafka: {request}", request);
+
+            // Serialize the login event to JSON
+            var jsonLoginEvent = JsonConvert.SerializeObject(request);
+
+            //create a hash code based on email/username for identifier 
+            string key = GenerateHashCode.GetHashCode(request.AccountRegistration.User.Email.ToString());
+            //request.KafkaRecord.Key = key;
+
+            //Create a object to store the response
+            DeliveryResult<string, string> response = null;
 
             // Send the message to Kafka
-            DeliveryResult<string, string> response = null;
-            var result = await _producer.Produce(request.Payload.Topic, message.Key, "First message produce by Identity ServiceA!");
-            if (result != null)
+            bool messageProduced = await _producer.Produce(Topic, key, jsonLoginEvent);
+            if (messageProduced == true)
             {
-                var processedData = _consumer.WaitForResponse("user-authentication-topic", key);
+                //consuming message from kafka topic response specifiyng the identifier
+                var processedData = _consumer.WaitForResponse(ResponseTopic, key);
             }
-            return response;                  
+            return response;
 
         }
     }

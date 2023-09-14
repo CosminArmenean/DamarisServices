@@ -1,20 +1,18 @@
 ﻿using Confluent.Kafka;
-using Damaris.DataService.Data.v1;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 namespace DamarisServices.Services.v1.User
 {
-    public class UserService : IUserService
+    public class UserService 
     {
-        private readonly RedisDbContext _dbContext;
         private readonly IDistributedCache _cache;
         private readonly IProducer<string, string> _kafkaProducer;
 
 
-        public UserService(RedisDbContext dbContext, IDistributedCache cache, IProducer<string, string> kafkaProducer)
+        public UserService(IDistributedCache cache, IProducer<string, string> kafkaProducer)
         {
-            _dbContext = dbContext;
+            
             _cache = cache;
             _kafkaProducer = kafkaProducer;
         }

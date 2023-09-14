@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Damaris.DataService\Damaris.DataService.csproj" />
+    <ProjectReference Include="..\Damaris.Common\Damaris.Common.csproj" />
     <ProjectReference Include="..\Damaris.Domain\Damaris.Domain.csproj" />
     <ProjectReference Include="..\KafkaCommunicationLibrary\KafkaCommunicationLibrary.csproj" />
   </ItemGroup>

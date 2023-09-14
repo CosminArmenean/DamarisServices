@@ -8,6 +8,7 @@ using Damaris.DataService.Repositories.v1.Implementation.UserImplementation;
 using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.DataService.Services.v1.KafkaConsumer;
+using Damaris.DataService.Services.v1.User;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Domain.Models;
 using KafkaCommunicationLibrary.Producers;
@@ -55,10 +56,13 @@ builder.Services.AddWatchDogServices(opt =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 //Initializing my DbContext inside the DI Container
-builder.Services.AddDbContext<OfficerDbContext>(options => options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2)));
+builder.Services.AddDbContext<OfficerDbContext>(options => 
+{
+    options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2));
+ }, ServiceLifetime.Singleton);
 //builder.Services.AddDbContext<UserDataContext>(options => options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2)));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+//builder.Services.AddScoped<UserService>
 
 
 // Kafka settings
@@ -96,12 +100,15 @@ builder.Services.AddSingleton(producerConfig);
 //builder.Services.AddScoped<KafkaConsumer<string, string>>();
 builder.Services.AddScoped<KafkaProducer<string, string>>();
 
-//Add background services
 //builder.Services.AddScoped<IdentityServiceConsumer>();
 // Change scoped to singleton if appropriate
 //builder.Services.AddScoped<KafkaConsumer<string, string>>();
 //builder.Services.AddScoped<IKafkaConsumer<string, string>, KafkaConsumer<string, string>>();
 //Register the topic event processors as scoped services:
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
 builder.Services.AddSingleton<IKafkaTopicEventProcessor<string, string>, LoginEventProcessor>();
 
 builder.Services.AddHostedService<IdentityServiceConsumer>();
@@ -109,13 +116,19 @@ builder.Services.AddSingleton<IdentityServiceConsumer>();
 builder.Services.AddSingleton<KafkaConsumer<string, string>>();
 
 
+//builder.Services.AddScoped<IdentityServiceConsumer>();
+//builder.Services.AddScoped<IHostedService, IdentityServiceConsumer>();
+///builder.Services.AddSingleton<IHostedService, IdentityServiceConsumer>();
+
+//builder.Services.AddScoped<KafkaConsumer<string, string>>();
+//builder.Services.AddSingleton<IHostedService, IdentityServiceConsumer>();
+
 
 //Add background services
 //builder.Services.AddSingleton<IHostedService, IdentityServiceConsumer>();
 
 //builder.Services.AddSingleton<IKafkaConsumer<string, string>, KafkaConsumer<string, string>>();
 //builder.Services.AddSingleton<IKafkaConsumer>(provider => provider.GetRequiredService<IdentityServiceConsumer>());
-
 
 
 //Add MediatR           

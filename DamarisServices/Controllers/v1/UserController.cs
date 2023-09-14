@@ -1,4 +1,5 @@
 using Confluent.Kafka;
+using Damaris.Domain.v1.Dtos.Requests.Account;
 using Damaris.Domain.v1.Models.Account;
 using Damaris.Domain.v1.Models.User;
 using Damaris.Domain.v2.Models.User;
@@ -39,6 +40,14 @@ namespace DamarisServices.Controllers.v1
         #endregion ======================= [Private Properties] ==============================
         public UserController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory) : base(mediator, producer, consumer, loggerFactory) { }
 
+        [HttpPost(Name = "Register")]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> Register([FromBody] AccountRegistrationRequestDto model)
+        {
+            var registration = await HandleRequestAsync(new CreateNewUserRequest() { AccountRegistration = model });
+
+            return Ok();
+        }
 
         
         [HttpPost(Name = "Login")]

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Damaris.Domain.v1.Utilities.Attributes;
+using Damaris.Domain.v1.Dtos.Requests.Account;
 
 namespace Damaris.Domain.v1.Dtos.UserDtos
 {
@@ -15,9 +16,9 @@ namespace Damaris.Domain.v1.Dtos.UserDtos
     /// </summary>
     public record RegisterUserDto
     {
-        [Required(ErrorMessage = "RegisterTwoUser field is required.")]
-        [Display(Name = "Register Two User")]
-        public bool RegisterTwoUser { get; init; }
+        //[Required(ErrorMessage = "RegisterTwoUser field is required.")]
+        //[Display(Name = "Register Two User")]
+        //public bool RegisterTwoUser { get; init; }
 
         [Required(ErrorMessage = "The First Name field is required.")]
         [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
@@ -75,7 +76,9 @@ namespace Damaris.Domain.v1.Dtos.UserDtos
         [Display(Name = "Gender")]
         public string? Gender { get; init; }
 
-        public DateTime RegisteredAt { get; init; }
-        public RegisterUserDto? LinkedUser { get; init; }
+        //public RegisterUserDto? LinkedUser { get; init; }
+
+        public List<AccountDto> Accounts { get; set; }
+        public List<JointAccountUserDto> JointAccountUsers { get; set; }
     }
 }

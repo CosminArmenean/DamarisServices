@@ -10,8 +10,7 @@ namespace Damaris.Domain.v1.Dtos.UserDtos
 {
     public record UserDto
     {
-        public Guid UserId { get; init; }
-
+        public Guid UserId { get; set; }
         public string? FirstName { get; init; }
 
         public string? LastName { get; init; }

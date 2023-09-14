@@ -19,64 +19,64 @@ namespace Damaris.Domain.v1.Dtos.UserExtension
         /// <param name="countryId"></param>
         /// <param name="linkedUserCountryId"></param>
         /// <returns></returns>
-        public static List<UserDtos.RegisterUser?>? RegisterUserDtoAsRegisterUser(this Models.User.RegisterUserDto registerUser, List<int>? countrysIds = null, List<string>? guids = null)
-        {
-            if (registerUser == null) //checking if is null in this case we will return null 
-            {
-                return null;
-            }
-            List<UserDtos.RegisterUser?> registerUserList = new();
-            Guid guid = guids != null ? new Guid(guids[0]) : Guid.NewGuid();
-            Guid guidLinkedUser = countrysIds.Count > 1 ? new Guid(guids[1]) : Guid.NewGuid();
-            UserDtos.RegisterUser? user = new();
-            UserDtos.RegisterUser? linkedUser = new();
-            //casting objects to RegisterUser object
-            user = new UserDtos.RegisterUser()
-            {
-                UserId = guid,
-                FirstName = registerUser?.FirstName,
-                LastName = registerUser?.LastName,
-                PasswordHash = registerUser?.Password,
-                Email = registerUser?.Email,
-                CountryId = countrysIds != null ? countrysIds[0] : 0,
-                MobilePhone = registerUser?.MobilePhone,
-                BirthDate = registerUser.BirthDate,
-                Gender = registerUser.Gender != null ? char.Parse(registerUser.Gender) : default,
-                RegisteredAt = registerUser.RegisteredAt,
-                IsActive = IS_ACTIVE,
-                LastLogin = registerUser.RegisteredAt,
-                LinkedWithAccount = registerUser.RegisterTwoUser == true ? guidLinkedUser : null
-            };
-            if (registerUser.RegisterTwoUser && registerUser.LinkedUser != null)
-            {
-                linkedUser = new UserDtos.RegisterUser()
-                {
-                    UserId = guidLinkedUser,
-                    FirstName = registerUser.LinkedUser.FirstName,
-                    LastName = registerUser.LinkedUser.LastName,
-                    PasswordHash = registerUser.LinkedUser.Password,
-                    Email = registerUser.LinkedUser.Email,
-                    CountryId = countrysIds != null ? countrysIds[1] : 0,
-                    MobilePhone = registerUser.LinkedUser.MobilePhone,
-                    BirthDate = registerUser.LinkedUser.BirthDate,
-                    Gender = registerUser.LinkedUser.Gender != null ? char.Parse(registerUser.LinkedUser.Gender) : default,
-                    RegisteredAt = registerUser.LinkedUser.RegisteredAt,
-                    IsActive = IS_ACTIVE,
-                    LastLogin = registerUser.LinkedUser.RegisteredAt,
-                    LinkedWithAccount = guid
-                };
-                //adding both user to list and returning the list
-                registerUserList.Add(user);
-                registerUserList.Add(linkedUser);
-                return registerUserList;
-            }
-            else
-            {
-                linkedUser = null;
-                //adding user to list and returning the list
-                registerUserList.Add(user);
-            }
-            return registerUserList;
-        }
+        //public static List<UserDtos.RegisterUser?>? RegisterUserDtoAsRegisterUser(this Models.User.RegisterUserDto registerUser, List<int>? countrysIds = null, List<string>? guids = null)
+        //{
+        //    if (registerUser == null) //checking if is null in this case we will return null 
+        //    {
+        //        return null;
+        //    }
+        //    List<UserDtos.RegisterUser?> registerUserList = new();
+        //    Guid guid = guids != null ? new Guid(guids[0]) : Guid.NewGuid();
+        //    Guid guidLinkedUser = countrysIds.Count > 1 ? new Guid(guids[1]) : Guid.NewGuid();
+        //    UserDtos.RegisterUser? user = new();
+        //    UserDtos.RegisterUser? linkedUser = new();
+        //    //casting objects to RegisterUser object
+        //    user = new UserDtos.RegisterUser()
+        //    {
+        //        UserId = guid,
+        //        FirstName = registerUser?.FirstName,
+        //        LastName = registerUser?.LastName,
+        //        PasswordHash = registerUser?.Password,
+        //        Email = registerUser?.Email,
+        //        CountryId = countrysIds != null ? countrysIds[0] : 0,
+        //        MobilePhone = registerUser?.MobilePhone,
+        //        BirthDate = registerUser.BirthDate,
+        //        Gender = registerUser.Gender != null ? char.Parse(registerUser.Gender) : default,
+        //        RegisteredAt = registerUser.RegisteredAt,
+        //        IsActive = IS_ACTIVE,
+        //        LastLogin = registerUser.RegisteredAt,
+        //        LinkedWithAccount = registerUser.RegisterTwoUser == true ? guidLinkedUser : null
+        //    };
+        //    if (registerUser.RegisterTwoUser && registerUser.LinkedUser != null)
+        //    {
+        //        linkedUser = new UserDtos.RegisterUser()
+        //        {
+        //            UserId = guidLinkedUser,
+        //            FirstName = registerUser.LinkedUser.FirstName,
+        //            LastName = registerUser.LinkedUser.LastName,
+        //            PasswordHash = registerUser.LinkedUser.Password,
+        //            Email = registerUser.LinkedUser.Email,
+        //            CountryId = countrysIds != null ? countrysIds[1] : 0,
+        //            MobilePhone = registerUser.LinkedUser.MobilePhone,
+        //            BirthDate = registerUser.LinkedUser.BirthDate,
+        //            Gender = registerUser.LinkedUser.Gender != null ? char.Parse(registerUser.LinkedUser.Gender) : default,
+        //            RegisteredAt = registerUser.LinkedUser.RegisteredAt,
+        //            IsActive = IS_ACTIVE,
+        //            LastLogin = registerUser.LinkedUser.RegisteredAt,
+        //            LinkedWithAccount = guid
+        //        };
+        //        //adding both user to list and returning the list
+        //        registerUserList.Add(user);
+        //        registerUserList.Add(linkedUser);
+        //        return registerUserList;
+        //    }
+        //    else
+        //    {
+        //        linkedUser = null;
+        //        //adding user to list and returning the list
+        //        registerUserList.Add(user);
+        //    }
+        //    return registerUserList;
+        //}
     }
 }

@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="v1\Dtos\Requests\User\" />
     <Folder Include="v1\Dtos\Responses\" />
-    <Folder Include="v1\Dtos\Requests\" />
     <Folder Include="v1\Interfaces\KafkaInterfaces\" />
   </ItemGroup>
 

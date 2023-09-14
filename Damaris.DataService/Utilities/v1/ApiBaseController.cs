@@ -1,4 +1,7 @@
-﻿using Confluent.Kafka;
+﻿using AutoMapper;
+using Confluent.Kafka;
+using Damaris.DataService.Repositories.v1;
+using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
 using MediatR;
@@ -12,17 +15,23 @@ namespace Damaris.DataService.Utilities.v1
         private readonly KafkaConsumer<string, string> _consumer;
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
         /// <summary>
         /// Base class for an MVC controller with view support.
         /// </summary>
         /// <param name="mediator"></param>
         /// <param name="loggerFactory"></param>
-        public ApiBaseController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory)
+        public ApiBaseController(ILoggerFactory loggerFactory, IMediator mediator,IUnitOfWork unitOfWork, IMapper mapper, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer)
         {
-            _producer = producer;
-            _consumer = consumer;
             _logger = loggerFactory.CreateLogger(GetType());
             _mediator = mediator;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _producer = producer;
+            _consumer = consumer;
+            
+            
         }
         /// <summary>
         /// Handles the controller request.

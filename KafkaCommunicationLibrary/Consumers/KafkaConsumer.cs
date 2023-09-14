@@ -2,8 +2,7 @@
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using System.Threading.Tasks;
 using System;
-using static Confluent.Kafka.ConfigPropertyNames;
-using static System.Collections.Specialized.BitVector32;
+
 
 namespace KafkaCommunicationLibrary.Consumers
 {

@@ -12,6 +12,9 @@ namespace Damaris.Domain.v1.Models.User
     {
         public Guid UserId { get; init; }
 
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
         [EmailAddress]
         public string? Email { get; set; }
 

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Damaris.DataService.Data.v1;
 using Damaris.DataService.Providers.v1.User;
 using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.Domain.v1.Models.Account;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
@@ -22,7 +24,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 
          #region ==================== [Constructor] =========================
 
-         public ApplicationUserRepository(ILoggerFactory loggerFactory, IUnitOfWork unitOfWork, IMapper mapper) : base(loggerFactory, unitOfWork, mapper)
+         public ApplicationUserRepository(ILoggerFactory loggerFactory, OfficerDbContext officerDbContext) : base(loggerFactory, officerDbContext)
          {
             // _usersTable = new UserProvider(loggerFactory, connectionFactory);
          }
