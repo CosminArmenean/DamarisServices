@@ -2,6 +2,7 @@
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using System.Threading.Tasks;
 using System;
+using Silverback;
 
 
 namespace KafkaCommunicationLibrary.Consumers
@@ -26,7 +27,7 @@ namespace KafkaCommunicationLibrary.Consumers
         {
             try
             {
-                return _consumer.Consume();
+                return _consumer.Consume(timeout:TimeSpan.Zero);
             }
             catch (ConsumeException ex)
             {
@@ -34,7 +35,31 @@ namespace KafkaCommunicationLibrary.Consumers
                 return null;
             }
         }
-       
+
+
+        //public async Task<ConsumeResult<TKey, TValue>> ConsumeAsync()
+        //{
+        //    try
+        //    {
+        //        using (var consumer = new SilverbackConsumer<TKey, TValue>(_consumer))
+        //        {
+        //            await consumer.StartAsync();
+
+        //            while (true)
+        //            {
+        //                var consumeResult = await consumer.ReceiveAsync();
+
+        //                return consumeResult;
+        //            }
+        //        }
+        //    }
+        //    catch (ConsumeException ex)
+        //    {
+        //        _logger.LogError($"Consume error: {ex.Error.Reason}");
+        //        return null;
+        //    }
+        //}
+
 
         public ConsumeResult<TKey, TValue> WaitForResponse(string responseTopic, string uniqueKey)
         {

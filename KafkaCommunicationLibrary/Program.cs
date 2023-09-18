@@ -4,6 +4,7 @@ using KafkaCommunicationLibrary.Domain.Models;
 using KafkaCommunicationLibrary.Producers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
+using Silverback.Messaging.Configuration;
 using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,7 +52,6 @@ builder.Services.AddScoped<KafkaProducer<string, string>>();
 
 
 
-//// Configure Kafka producer
 //builder.Services.AddSingleton(provider =>
 //{
 //    var kafkaConfig = configuration.GetSection("Kafka:Producer").Get<ProducerConfig>();

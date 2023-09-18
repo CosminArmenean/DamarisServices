@@ -1,6 +1,7 @@
 using Confluent.Kafka;
 using Damaris.DataService.Data.v1;
 using Damaris.DataService.Domain.v1.Models.Generic;
+using Damaris.DataService.Providers.v1.User;
 using Damaris.DataService.Repositories.v1;
 using Damaris.DataService.Repositories.v1.BusinessRoutines;
 using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
@@ -9,13 +10,20 @@ using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Repositories.v1.Interfaces.UserInterfaces;
 using Damaris.DataService.Services.v1.KafkaConsumer;
 using Damaris.DataService.Services.v1.User;
+using Damaris.Domain.v1.Models.Account;
+using Damaris.Domain.v1.Models.User;
+using IdentityServer4.Services;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Domain.Models;
 using KafkaCommunicationLibrary.Producers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Pomelo.EntityFrameworkCore.MySql.Internal;
 using System.Configuration;
 using System.Reflection;
+using System.Text;
 using WatchDog;
 using WatchDog.src.Enums;
 
@@ -31,7 +39,9 @@ builder.Services.AddControllers();
 
 // Bind configuration to classes
 //AppSettings? appSettings = new() {  };
-var OfficerMySqlGe2 = builder.Configuration.GetConnectionString(name: "OfficerMySqlGe2");
+var DamarisMySqlReadWrite = builder.Configuration.GetConnectionString(name: "DamarisMySqlReadWrite");
+var DamarisMySqlReadOnly = builder.Configuration.GetConnectionString(name: "DamarisMySqlReadOnly");
+
 var WatchDogPostGreSql = builder.Configuration.GetConnectionString(name: "WatchDogPostGreSql");
 //var appSettings = builder.Configuration.GetSection("ConnectionStrings").Get<AppSettings>();
 //builder.Services.AddSingleton(appSettings);
@@ -58,11 +68,13 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 //Initializing my DbContext inside the DI Container
 builder.Services.AddDbContext<OfficerDbContext>(options => 
 {
-    options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2));
+    options.UseMySql(DamarisMySqlReadWrite, ServerVersion.AutoDetect(DamarisMySqlReadWrite));
  }, ServiceLifetime.Singleton);
-//builder.Services.AddDbContext<UserDataContext>(options => options.UseMySql(OfficerMySqlGe2, ServerVersion.AutoDetect(OfficerMySqlGe2)));
-
-//builder.Services.AddScoped<UserService>
+//add read only db context
+builder.Services.AddDbContext<OfficerReadOnlyDbContext>(options =>
+{
+    options.UseMySql(DamarisMySqlReadOnly, ServerVersion.AutoDetect(DamarisMySqlReadOnly));
+}, ServiceLifetime.Singleton);
 
 
 // Kafka settings
@@ -110,12 +122,43 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton<IKafkaTopicEventProcessor<string, string>, LoginEventProcessor>();
+builder.Services.AddSingleton<IKafkaTopicEventProcessor<string, string>, RegisterEventProcessor>();
 
 builder.Services.AddHostedService<IdentityServiceConsumer>();
 builder.Services.AddSingleton<IdentityServiceConsumer>();
 builder.Services.AddSingleton<KafkaConsumer<string, string>>();
 
+//Adding mediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+//==========================================
 
+//builder.Services.AddSingleton<IProfileService, IdentityServerServiceProvider>();
+
+//Getting the secret from the config
+byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtConfig:Secret"]);
+
+
+
+//Adding identity
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    //.AddEntityFrameworkStores<OfficerDbContext>()
+    //.AddDefaultTokenProviders();
+
+
+// Add IdentityServer4 to the services.
+//builder.Services.AddIdentityServer()
+//    .AddInMemoryClients(Config.Clients)
+//    .AddInMemoryIdentityResources(Config.IdentityResources)
+//    .AddInMemoryApiScopes(Config.ApiScopes);
+
+//builder.Services.AddIdentityServer()
+//    .AddAspNetIdentity<ApplicationUser>()
+//    .AddProfileService<IdentityServerServiceProvider>();    
+    //.AddConfigurationStore(options =>
+    //{
+    //    options.ConfigureDbContext = builder => builder.UseMySql(Configuration.GetConnectionString("Officer"),
+    //        MySqlOptions => MySqlOptions.MigrationAssembly("Damaris.DataService"));
+    //});
 //builder.Services.AddScoped<IdentityServiceConsumer>();
 //builder.Services.AddScoped<IHostedService, IdentityServiceConsumer>();
 ///builder.Services.AddSingleton<IHostedService, IdentityServiceConsumer>();
@@ -132,7 +175,6 @@ builder.Services.AddSingleton<KafkaConsumer<string, string>>();
 
 
 //Add MediatR           
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 var app = builder.Build();
 

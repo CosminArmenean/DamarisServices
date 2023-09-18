@@ -1,27 +1,22 @@
 ﻿using Confluent.Kafka;
 using Damaris.Common.v1.CommonUtilities.JsonUtilities;
 using Damaris.Common.v1.Constants;
-using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
-using DnsClient;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Org.BouncyCastle.Crypto.Tls;
-using StackExchange.Redis;
-using System.Linq.Expressions;
 
-namespace Damaris.DataService.Services.v1.KafkaConsumer
+namespace Damaris.Officer.Services.v1
 {
-    public class IdentityServiceConsumer : BackgroundService, IKafkaTopicProcessor<ConsumeResult<string, string>>
+    public class OfficerConsumerService : BackgroundService, IKafkaTopicProcessor<ConsumeResult<string, string>>
     {
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         private readonly KafkaConsumer<string, string> _consumer;
-        private readonly ILogger<IdentityServiceConsumer> _logger;
+        private readonly ILogger<OfficerConsumerService> _logger;
         public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
 
         private readonly IEnumerable<IKafkaTopicEventProcessor<string, string>> _topicEventProcessors;
 
-        public IdentityServiceConsumer(ILogger<IdentityServiceConsumer> logger, KafkaConsumer<string, string> consumer, IEnumerable<IKafkaTopicEventProcessor<string, string>> topicProcessors)
+        public OfficerConsumerService(ILogger<OfficerConsumerService> logger, KafkaConsumer<string, string> consumer, IEnumerable<IKafkaTopicEventProcessor<string, string>> topicProcessors)
         {
             _logger = logger;
             _consumer = consumer;
@@ -29,7 +24,7 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
             _topicEventProcessors = topicProcessors;
         }
 
-       
+
 
         public async Task<ConsumeResult<string, string>> ProcessEventAsync(string eventType, string key, string message)
         {
@@ -38,7 +33,7 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
             {
                 if (eventType == EventTypes.LOGIN)
                 {
-                    
+
                 }
                 else if (eventType == EventTypes.LOGOUT)
                 {
@@ -69,7 +64,7 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
 
         private async Task ConsumeKafkaMessages(CancellationToken stoppingToken)
         {
-            foreach(var processor in _topicEventProcessors)
+            foreach (var processor in _topicEventProcessors)
             {
                 var topic = processor.Topic;
                 _consumer.Subscribe(topic);
@@ -79,14 +74,23 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                     {
                         try
                         {
+                           
                             ConsumeResult<string, string>? consumeResult = _consumer.Consume();
-                            var jsonLoginEvent = consumeResult.Message.Value;
-                            _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
-                            // Process the received message using the topic event processor
-                            string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
+                            if(consumeResult != null)
+                            {
+                                var jsonLoginEvent = consumeResult.Message.Value;
+                                _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
+                                // Process the received message using the topic event processor
+                                string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
 
-                            var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
-                            
+                                var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
+
+                            }
+                            else
+                            {
+                                
+                            }
+
                         }
                         catch (OperationCanceledException)
                         {
@@ -97,14 +101,14 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                         catch (Exception ex)
                         {
                             _logger.LogError(ex, $"Error processing Kafka message on topic '{topic}'.");
-                        }                        
-                    }                    
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
 
                     _logger.LogError(ex, $"Error processing Kafka message on topic '{topic}'.");
-                }    
+                }
             }
         }
 

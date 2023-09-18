@@ -6,6 +6,7 @@ namespace KafkaCommunicationLibrary.Repositories.Interfaces
     public interface IKafkaConsumer<TKey, TValue>
     {
         ConsumeResult<TKey, TValue> Consume();
+        //Task<ConsumeResult<TKey, TValue>> ConsumeAsync();
         Task<ConsumeResult<TKey, TValue>> WaitForResponse(string responseTopic, TKey key, TValue value);
     }
 }

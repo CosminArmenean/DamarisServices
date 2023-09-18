@@ -65,49 +65,49 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
                 };
 
                 var result = await _officerDbContext.Users.AddAsync(user);
-                return result;
+                return null;
             }
-            else if (registrationDto is JointAccountRegistrationDto jointAccountDto)
-            {
-                // Joint account registration
-                var primaryUser = new User
-                {
-                    UserName = jointAccountDto.PrimaryUsername,
-                    Email = jointAccountDto.PrimaryEmail,
-                    // Set other user properties
-                };
+            //else if (registrationDto is JointAccountRegistrationDto jointAccountDto)
+            //{
+            //    // Joint account registration
+            //    var primaryUser = new User
+            //    {
+            //        UserName = jointAccountDto.PrimaryUsername,
+            //        Email = jointAccountDto.PrimaryEmail,
+            //        // Set other user properties
+            //    };
 
-                var result = await _userManager.CreateAsync(primaryUser, jointAccountDto.PrimaryPassword);
+            //    var result = await _userManager.CreateAsync(primaryUser, jointAccountDto.PrimaryPassword);
 
-                if (result.Succeeded)
-                {
-                    // Create secondary users and associate them with the joint account
-                    foreach (var secondaryUserDto in jointAccountDto.SecondaryUsers)
-                    {
-                        var secondaryUser = new User
-                        {
-                            UserName = secondaryUserDto.Username,
-                            Email = secondaryUserDto.Email,
-                            // Set other user properties
-                        };
+            //    if (result.Succeeded)
+            //    {
+            //        // Create secondary users and associate them with the joint account
+            //        foreach (var secondaryUserDto in jointAccountDto.SecondaryUsers)
+            //        {
+            //            var secondaryUser = new User
+            //            {
+            //                UserName = secondaryUserDto.Username,
+            //                Email = secondaryUserDto.Email,
+            //                // Set other user properties
+            //            };
 
-                        var secondaryResult = await _userManager.CreateAsync(secondaryUser);
+            //            var secondaryResult = await _userManager.CreateAsync(secondaryUser);
 
-                        if (secondaryResult.Succeeded)
-                        {
-                            // Associate secondary user with joint account
-                            // You may need to implement logic to create a joint account and associate users here
-                        }
-                        else
-                        {
-                            // Handle secondary user registration failure
-                            // You may want to roll back primary user registration here
-                        }
-                    }
-                }
+            //            if (secondaryResult.Succeeded)
+            //            {
+            //                // Associate secondary user with joint account
+            //                // You may need to implement logic to create a joint account and associate users here
+            //            }
+            //            else
+            //            {
+            //                // Handle secondary user registration failure
+            //                // You may want to roll back primary user registration here
+            //            }
+            //        }
+            //    }
 
-                return result;
-            }
+                return null;
+            //}
 
             // Handle unsupported registration type
             return IdentityResult.Failed(new IdentityError { Description = "Invalid registration type." });
@@ -143,8 +143,8 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 
         public async Task<UserDto> GetUserByEmailAsync(string email) 
         {
-            return await _officerDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-
+            // return await _officerDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return null;
         }
 
         public Task CreateNewUserAsync(List<Damaris.Domain.v1.Models.User.RegisterUser>? user, bool twoUser = false)

@@ -1,0 +1,15 @@
+﻿using Damaris.Domain.v1.Models.User;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+
+namespace Damaris.Officer.Data.v1
+{
+    public class OfficerDbContext : DbContext
+    {
+        public virtual DbSet<User> Users { get; set; }
+
+        public OfficerDbContext(DbContextOptions<OfficerDbContext> options) : base(options) { }
+
+
+    }
+}

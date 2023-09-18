@@ -12,14 +12,14 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Dapper" Version="2.0.151" />
     <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -35,6 +35,7 @@
     <Folder Include="Controllers\v2\" />
     <Folder Include="Data\v2\" />
     <Folder Include="MappingProfiles\v2\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Providers\v1\Generic\" />
     <Folder Include="Providers\v2\" />
     <Folder Include="Repositories\v1\Interfaces\Contracts\" />
@@ -45,6 +46,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Damaris.Common\Damaris.Common.csproj" />
     <ProjectReference Include="..\Damaris.Domain\Damaris.Domain.csproj" />
+    <ProjectReference Include="..\IdentityServer4-net6\src\IdentityServer4\src\IdentityServer4.csproj" />
     <ProjectReference Include="..\KafkaCommunicationLibrary\KafkaCommunicationLibrary.csproj" />
     <ProjectReference Include="..\LanguageService\LanguageService.csproj" />
   </ItemGroup>

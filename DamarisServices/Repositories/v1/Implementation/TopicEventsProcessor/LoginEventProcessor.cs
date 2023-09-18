@@ -8,7 +8,9 @@ namespace DamarisServices.Repositories.v1.Implementation.TopicEventsProcessor
     {
         private readonly ILogger<LoginEventProcessor> _logger;
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
+        private readonly string IDENTITY_AUTHENTICATION_RESPONSE_TOPIC = "user-authentication-response-topic";
         public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
+        public string ResponseTopic => IDENTITY_AUTHENTICATION_RESPONSE_TOPIC;
 
         //public async Task<string> ProcessEventAsync(string message)
         //{
