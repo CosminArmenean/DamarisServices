@@ -75,7 +75,7 @@ namespace Damaris.Officer.Services.v1
                         try
                         {
                            
-                            ConsumeResult<string, string>? consumeResult = _consumer.Consume();
+                            ConsumeResult<string, string>? consumeResult = await _consumer.ConsumeAsync(stoppingToken);
                             if(consumeResult != null)
                             {
                                 var jsonLoginEvent = consumeResult.Message.Value;

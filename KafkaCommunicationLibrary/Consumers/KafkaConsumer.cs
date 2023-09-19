@@ -37,6 +37,20 @@ namespace KafkaCommunicationLibrary.Consumers
         }
 
 
+        public Task<ConsumeResult<TKey, TValue>> ConsumeAsync(CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(
+                obj =>
+                {
+                    var (c, ct) = ((IConsumer<TKey, TValue>, CancellationToken))obj!;
+                    return c.Consume(ct);
+                },
+                (this._consumer, cancellationToken),
+                cancellationToken,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Current);
+        }
+
         //public async Task<ConsumeResult<TKey, TValue>> ConsumeAsync()
         //{
         //    try
@@ -93,36 +107,36 @@ namespace KafkaCommunicationLibrary.Consumers
         /// <param name="processMessage"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<ConsumeResult<TKey, TValue>> ConsumeAsync(string topic, Action<TValue> processMessage, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var consumeTask = Task.Run(() => _consumer.Consume(cancellationToken), cancellationToken);
+        //public async Task<ConsumeResult<TKey, TValue>> ConsumeAsync(string topic, Action<TValue> processMessage, CancellationToken cancellationToken)
+        //{
+        //    try
+        //    {
+        //        var consumeTask = Task.Run(() => _consumer.Consume(cancellationToken), cancellationToken);
 
-                _logger.LogInformation($"Before Task.WhenAny: IsCancellationRequested = {cancellationToken.IsCancellationRequested}");
-                var completedTask = await Task.WhenAny(consumeTask, Task.Delay(-1, cancellationToken));
-                _logger.LogInformation($"After Task.WhenAny: IsCancellationRequested = {cancellationToken.IsCancellationRequested}");
+        //        _logger.LogInformation($"Before Task.WhenAny: IsCancellationRequested = {cancellationToken.IsCancellationRequested}");
+        //        var completedTask = await Task.WhenAny(consumeTask, Task.Delay(-1, cancellationToken));
+        //        _logger.LogInformation($"After Task.WhenAny: IsCancellationRequested = {cancellationToken.IsCancellationRequested}");
 
-                if (completedTask == consumeTask)
-                {
-                    // The Consume task completed successfully
-                    var result = consumeTask.Result;
-                    processMessage?.Invoke(result.Message.Value);
-                    return result;
-                }
-                else
-                {
-                    // The cancellation token was triggered
-                    cancellationToken.ThrowIfCancellationRequested();
-                    return null; // or throw an appropriate exception
-                }
-            }
-            catch (ConsumeException ex)
-            {
-                _logger.LogError($"Consume error: {ex.Error.Reason}");
-                return null;
-            }
-        }
+        //        if (completedTask == consumeTask)
+        //        {
+        //            // The Consume task completed successfully
+        //            var result = consumeTask.Result;
+        //            processMessage?.Invoke(result.Message.Value);
+        //            return result;
+        //        }
+        //        else
+        //        {
+        //            // The cancellation token was triggered
+        //            cancellationToken.ThrowIfCancellationRequested();
+        //            return null; // or throw an appropriate exception
+        //        }
+        //    }
+        //    catch (ConsumeException ex)
+        //    {
+        //        _logger.LogError($"Consume error: {ex.Error.Reason}");
+        //        return null;
+        //    }
+        //}
         
 
 
