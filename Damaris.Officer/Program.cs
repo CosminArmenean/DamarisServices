@@ -22,15 +22,55 @@ using Damaris.Officer.Repositories.v1.Interfaces.Generic;
 using Damaris.Officer.Repositories.v1;
 using Damaris.Officer.Data.v1;
 using Microsoft.EntityFrameworkCore;
+using Damaris.Officer.Configuration.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var officerMysql = builder.Configuration.GetConnectionString(name: "Officer");
-builder.Services.AddControllers();
+
+builder.Services.AddControllers(option =>
+{
+    option.Filters.Add(new IdentityFilter());//global filter
+});
+
+
+builder.Services.AddMvc();
+builder.Services.AddSwaggerGen( c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Identity API", Version = "v1" });
+    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Identity API", Version = "v2" });
+    c.EnableAnnotations();
+    c.ResolveConflictingActions(apiDescription => apiDescription.First());
+
+});
+builder.Services.AddSwaggerGenNewtonsoftSupport();
+//builder.Services.AddSwaggerGen(c =>
+//{
+//    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+//});
+//Add api versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        //new QueryStringApiVersionReader("api-version"),
+        new HeaderApiVersionReader("x-version")
+    //new MediaTypeApiVersionReader("ver")
+    );
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 
 //Initialize AutoMapper
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -71,12 +111,18 @@ builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
-    options.ReportApiVersions = true;
+    options.ReportApiVersions = true;    
     options.ApiVersionReader = ApiVersionReader.Combine(
         //new QueryStringApiVersionReader("api-version"),
         new HeaderApiVersionReader("x-version")
-    //new MediaTypeApiVersionReader("ver")
+        //new MediaTypeApiVersionReader("ver")
     );
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
 
 //Add Rate Limiter fixed window  x/user
@@ -116,11 +162,7 @@ builder.Services.AddRateLimiter(options =>
     }).RejectionStatusCode = 429; // To many requests
 });
 
-builder.Services.AddVersionedApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
-});
+
 
 
 // Kafka settings
@@ -179,11 +221,15 @@ builder.Services.AddIdentityServer()
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI( c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity Server API V1");
+    });
 }
 
 //rate limiter 

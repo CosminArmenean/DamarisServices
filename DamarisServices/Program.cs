@@ -24,6 +24,9 @@ using KafkaCommunicationLibrary.Repositories.Interfaces;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using KafkaCommunicationLibrary.Domain.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -174,6 +177,25 @@ builder.Services.AddScoped<IKafkaTopicEventProcessor<string, string>, LoginEvent
 
 //Add MediatR           
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+
+// Configure JWT authentication
+//need to proper configur this
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "your-issuer",
+            ValidAudience = "your-audience",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key"))
+        };
+    });
+
 
 
 //===================================================== APP =========================================================

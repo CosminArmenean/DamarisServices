@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Damaris.Kafka.Consumer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:39454;http://localhost:39455"
+    }
+  }
+}

@@ -80,6 +80,17 @@ namespace DamarisServices.Controllers.v1
             return Unauthorized();
         }
 
+        [MapToApiVersion("1.0")]
+        [HttpGet("profile")]
+        //[Authorize] // Requires authentication
+        public IActionResult GetUserProfile()
+        {
+            // Retrieve user profile information from your data source
+            var user = new { name = "John Doe", email = "john.doe@example.com" };
+
+            return Ok(user);
+        }
+
         //// [Route("api/account/logout")]
         //[HttpPost(Name = "Logout")]       
         //[MapToApiVersion("1.0")]
@@ -125,6 +136,6 @@ namespace DamarisServices.Controllers.v1
         //    return BadRequest(result.Errors);
         //}
 
-       
+
     }
 }
