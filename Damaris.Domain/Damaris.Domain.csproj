@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="v1\Dtos\Requests\User\" />
     <Folder Include="v1\Interfaces\KafkaInterfaces\" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@ using Damaris.Domain.v1.Dtos.Requests.Account;
 using Damaris.Domain.v1.Models.Account;
 using Damaris.Domain.v1.Models.User;
 using Damaris.Officer.Configuration.Filters;
+using Damaris.Officer.Domain.v1.Account;
 using Damaris.Officer.Utilities.v1;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
@@ -50,8 +51,11 @@ namespace Damaris.Officer.Controllers.v1
 
         [HttpPost("Registration")]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> RegistrationV1([FromBody] AccountDto modelRegistration)
+        public async Task<IActionResult> RegistrationV1([FromBody] AccountRegistrationRequestDto modelRegistration)
         {
+
+
+            var ss = modelRegistration;
             return Ok();
         }
         //[Route("Register")]

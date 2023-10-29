@@ -37,4 +37,8 @@
     <ProjectReference Include="..\KafkaCommunicationLibrary\KafkaCommunicationLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Domain\v2\" />
+  </ItemGroup>
+
 </Project>

@@ -207,6 +207,16 @@ builder.Services.AddSingleton<IKafkaTopicEventProcessor<string, string>, Registe
 builder.Services.AddHostedService<OfficerConsumerService>();
 builder.Services.AddSingleton<OfficerConsumerService>();
 
+//adding cors 
+var OfficerAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: OfficerAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+        });
+});
 
 //Adding IdentityServer4-net6
 builder.Services.AddIdentityServer()
@@ -244,6 +254,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 });
 
 app.UseHttpsRedirection();
+
+app.UseCors(OfficerAllowSpecificOrigins);
 
 app.UseAuthorization();
 

@@ -80,12 +80,16 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                         try
                         {
                             ConsumeResult<string, string>? consumeResult = _consumer.Consume();
-                            var jsonLoginEvent = consumeResult.Message.Value;
-                            _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
-                            // Process the received message using the topic event processor
-                            string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
+                            if(consumeResult != null)
+                            {
+                                var jsonLoginEvent = consumeResult != null ? consumeResult.Message.Value : "";
+                                _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
+                                // Process the received message using the topic event processor
+                                string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
 
-                            var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
+                                var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
+                            }
+                            
                             
                         }
                         catch (OperationCanceledException)
