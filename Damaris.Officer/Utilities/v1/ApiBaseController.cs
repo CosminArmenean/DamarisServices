@@ -1,4 +1,5 @@
-﻿using Confluent.Kafka;
+﻿using AutoMapper;
+using Confluent.Kafka;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
 using MediatR;
@@ -12,17 +13,19 @@ namespace Damaris.Officer.Utilities.v1
         private readonly KafkaConsumer<string, string> _consumer;
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
         /// <summary>
         /// Base class for an MVC controller with view support.
         /// </summary>
         /// <param name="mediator"></param>
         /// <param name="loggerFactory"></param>
-        public ApiBaseController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory)
+        public ApiBaseController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory, IMapper mapper)
         {
             _producer = producer;
             _consumer = consumer;
             _logger = loggerFactory.CreateLogger(GetType());
             _mediator = mediator;
+            _mapper = mapper;
         }
         /// <summary>
         /// Handles the controller request.
@@ -30,7 +33,7 @@ namespace Damaris.Officer.Utilities.v1
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        protected async Task<IActionResult> HandleRequestAsync<T>(ApiRequest<T> request) where T : DeliveryResult<string, string>
+        protected async Task<IActionResult> HandleRequestAsync<T>(ApiRequest<T> request) where T : ConsumeResult<string, string>
         {
             string message = $"Receive request: {HttpContext.Request.Method} {HttpContext.Request.Path}";
             _logger.LogInformation(message);

@@ -11,7 +11,7 @@ namespace Damaris.Officer.Utilities.v1
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     public abstract class ApiRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> where TRequest : ApiRequest<TResponse>
-        where TResponse : DeliveryResult<string, string>
+        where TResponse : ConsumeResult<string, string>
     {
         protected readonly KafkaProducer<string, string> _producer;
         protected readonly KafkaConsumer<string, string> _consumer;

@@ -88,7 +88,7 @@ namespace KafkaCommunicationLibrary.Consumers
                 ConsumeResult<TKey, TValue> consumeResult = _consumer.Consume();
                 if(consumeResult != null && consumeResult.Message.Key != null && consumeResult.Message.Key.ToString() == uniqueKey)
                 {
-                    var message = consumeResult.Value;
+                    var message = consumeResult;
                     //do stuff
                     responseFound = true;
                 }  

@@ -30,7 +30,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcesso
                 try
                 {
                     // Deserialize the JSON message to extract username and password
-                    var loginData = JsonConvert.DeserializeObject<AccountRegistrationRequestDto>(message);
+                    var register = JsonConvert.DeserializeObject<AccountRegistrationRequestDto>(message);
 
                     // Retrieve the user from the database by username
                     //var user = await _userRepository.GetUserByEmailAsync(loginData.Email);

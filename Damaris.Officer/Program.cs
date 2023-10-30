@@ -23,6 +23,9 @@ using Damaris.Officer.Repositories.v1;
 using Damaris.Officer.Data.v1;
 using Microsoft.EntityFrameworkCore;
 using Damaris.Officer.Configuration.Filters;
+using Damaris.Officer.MappingProfiles.v1.RequestToDomain;
+using Damaris.Officer.Domain.v1;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,7 +77,9 @@ builder.Services.AddEndpointsApiExplorer();
 
 //Initialize AutoMapper
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+//adding logger
 builder.Services.AddLogging(logging => logging.AddWatchDogLogger());
 
 builder.Services.AddWatchDogServices(opt =>
@@ -227,8 +232,15 @@ builder.Services.AddIdentityServer()
     .AddTestUsers(new List<TestUser>())
     .AddDeveloperSigningCredential();
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+        .AddEntityFrameworkStores<OfficerDbContext>()
+        .AddDefaultTokenProviders();
+
 //Add MediatR           
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+
+
 var app = builder.Build();
 
 

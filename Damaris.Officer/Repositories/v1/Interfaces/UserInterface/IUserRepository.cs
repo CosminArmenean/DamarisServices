@@ -1,6 +1,8 @@
 ﻿using Damaris.Domain.v1.Dtos.GenericDtos;
+using Damaris.Domain.v1.Dtos.Requests.User;
 using Damaris.Domain.v1.Models.Account;
 using Damaris.Domain.v1.Models.User;
+using Microsoft.AspNetCore.Identity;
 
 namespace Damaris.Officer.Repositories.v1.Interfaces.UserInterface
 {
@@ -11,23 +13,45 @@ namespace Damaris.Officer.Repositories.v1.Interfaces.UserInterface
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task CreateNewUserAsync(Accounts? user, bool twoUser = false);
+        Task<IdentityUser> CreateNewUserAsync(IdentityUser userIdentity);
 
 
         /// <summary>
         /// This method patch a user property
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="patchDto"></param>
+        /// <param name="identityUser"></param>
         /// <returns></returns>
-        Task ApplyUserPatchAsync<TEntity>(TEntity? entity, List<PatchDto>? patchDto) where TEntity : User;
+        Task<IdentityUser> UpdateUserAsync(IdentityUser identityUser);
 
         /// <summary>
-        /// This method is deactivating an usser account.
+        /// This method is deactivating an user account.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        Task DeactivateUserAsync(Guid userId);
+        Task<bool> DeactivateUserAsync(IdentityUser identityUser);
+
+        /// <summary>
+        /// This method is getting user by email 
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<IdentityUser> GetUserByEmailAsync(string email);
+
+        /// <summary>
+        /// This method is getting user by username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        Task<IdentityUser> GetUserByUsernameAsync(string username);
+
+        /// <summary>
+        /// This methid is getting user by phone
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        Task<IdentityUser> GetUserByPhoneAsync(string phone);
+
+        
     
         
       

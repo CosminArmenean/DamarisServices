@@ -4,6 +4,7 @@ using Damaris.Common.v1.Constants;
 using Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcessor;
 using DnsClient;
 using KafkaCommunicationLibrary.Consumers;
+using KafkaCommunicationLibrary.Producers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Org.BouncyCastle.Crypto.Tls;
@@ -16,15 +17,17 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
     {
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         private readonly KafkaConsumer<string, string> _consumer;
+        private readonly KafkaProducer<string, string> _producer;
         private readonly ILogger<IdentityServiceConsumer> _logger;
         public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
 
         private readonly IEnumerable<IKafkaTopicEventProcessor<string, string>> _topicEventProcessors;
 
-        public IdentityServiceConsumer(ILogger<IdentityServiceConsumer> logger, KafkaConsumer<string, string> consumer, IEnumerable<IKafkaTopicEventProcessor<string, string>> topicProcessors)
+        public IdentityServiceConsumer(ILogger<IdentityServiceConsumer> logger, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, IEnumerable<IKafkaTopicEventProcessor<string, string>> topicProcessors)
         {
             _logger = logger;
             _consumer = consumer;
+            _producer = producer;
             // Initialize topic handlers
             _topicEventProcessors = topicProcessors;
         }
@@ -72,6 +75,7 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
             foreach(var processor in _topicEventProcessors)
             {
                 var topic = processor.Topic;
+                var responsTopic = processor.ResponseTopic;
                 _consumer.Subscribe(topic);
                 try
                 {
@@ -88,9 +92,20 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                                 string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
 
                                 var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
+
+                                bool messageProduced = await _producer.Produce(responsTopic, consumeResult.Message.Key, response.Value);
+                                if (messageProduced)
+                                {
+                                    _logger.LogInformation($"Produced Kafka message on topic '{responsTopic}':Message: {response}");
+                                }
+                                else
+                                {
+                                    _logger.LogError($"Failed to produce Kafka message on topic '{responsTopic}':Message: {response} : Key: {consumeResult.Message.Key}");
+
+                                }
                             }
-                            
-                            
+
+
                         }
                         catch (OperationCanceledException)
                         {

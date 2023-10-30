@@ -1,4 +1,5 @@
-﻿using Damaris.Domain.v1.Dtos.Requests.Account;
+﻿using AutoMapper;
+using Damaris.Domain.v1.Dtos.Requests.Account;
 using Damaris.Domain.v1.Models.User;
 using Damaris.Officer.Configuration.Filters;
 using Damaris.Officer.Utilities.v1;
@@ -21,8 +22,9 @@ namespace Damaris.Officer.Controllers.v2
 
 
         private readonly ILogger<IdentityController> _logger;
+        private readonly IMapper _mapper;
 
-        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory) : base(mediator, producer, consumer, loggerFactory) { }
+        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory, IMapper mapper) : base(mediator, producer, consumer, loggerFactory, mapper) { }
 
 
         [HttpGet(Name = "GetWeatherForecast")]

@@ -17,6 +17,7 @@ namespace Damaris.Domain.v1.Dtos.Requests.User
         public string Gender { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
+        public bool Main { get; set; }
     }
 }
 
