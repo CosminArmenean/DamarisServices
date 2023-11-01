@@ -1,6 +1,7 @@
 using Confluent.Kafka;
 using Damaris.DataService.Data.v1;
 using Damaris.DataService.Domain.v1.Models.Generic;
+using Damaris.DataService.MappingProfiles.v1;
 using Damaris.DataService.Providers.v1.User;
 using Damaris.DataService.Repositories.v1;
 using Damaris.DataService.Repositories.v1.BusinessRoutines;
@@ -63,10 +64,10 @@ builder.Services.AddWatchDogServices(opt =>
 });
 
 //Initialize AutoMapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //Initializing my DbContext inside the DI Container
-builder.Services.AddDbContext<OfficerDbContext>(options => 
+builder.Services.AddDbContext<DamarisDbContext>(options => 
 {
     options.UseMySql(DamarisMySqlReadWrite, ServerVersion.AutoDetect(DamarisMySqlReadWrite));
  }, ServiceLifetime.Singleton);
@@ -110,7 +111,6 @@ builder.Services.AddSingleton(producerConfig);
 //builder.Services.AddHostedService<IdentityServiceConsumer>();
 
 //builder.Services.AddScoped<KafkaConsumer<string, string>>();
-builder.Services.AddScoped<KafkaProducer<string, string>>();
 
 //builder.Services.AddScoped<IdentityServiceConsumer>();
 // Change scoped to singleton if appropriate
@@ -125,8 +125,14 @@ builder.Services.AddSingleton<IKafkaTopicEventProcessor<string, string>, LoginEv
 builder.Services.AddSingleton<IKafkaTopicEventProcessor<string, string>, RegisterEventProcessor>();
 
 builder.Services.AddHostedService<IdentityServiceConsumer>();
-builder.Services.AddSingleton<IdentityServiceConsumer>();
+//builder.Services.AddSingleton<IdentityServiceConsumer>();
+
+builder.Services.AddHostedService<AuthenticationServiceConsumer>();
+//builder.Services.AddSingleton<AuthenticationServiceConsumer>();
+
 builder.Services.AddSingleton<KafkaConsumer<string, string>>();
+builder.Services.AddSingleton<KafkaProducer<string, string>>();
+
 
 //Adding mediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));

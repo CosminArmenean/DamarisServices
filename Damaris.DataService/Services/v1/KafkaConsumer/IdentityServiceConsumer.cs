@@ -10,11 +10,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Org.BouncyCastle.Crypto.Tls;
 using StackExchange.Redis;
 using System.Linq.Expressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Damaris.DataService.Services.v1.KafkaConsumer
 {
     public class IdentityServiceConsumer : BackgroundService, IKafkaTopicProcessor<ConsumeResult<string, string>>
     {
+        private readonly string DATA = "REGISTER";
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         private readonly KafkaConsumer<string, string> _consumer;
         private readonly KafkaProducer<string, string> _producer;
@@ -72,8 +74,9 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
 
         private async Task ConsumeKafkaMessages(CancellationToken stoppingToken)
         {
-            foreach(var processor in _topicEventProcessors)
-            {
+            IKafkaTopicEventProcessor<string, string> processor = _topicEventProcessors.Where(p => p.Data == DATA).First();
+           
+               
                 var topic = processor.Topic;
                 var responsTopic = processor.ResponseTopic;
                 _consumer.Subscribe(topic);
@@ -83,15 +86,15 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                     {
                         try
                         {
-                            ConsumeResult<string, string>? consumeResult = _consumer.Consume();
+                            ConsumeResult<string, string>? consumeResult = await _consumer.ConsumeAsync(stoppingToken);
                             if(consumeResult != null)
                             {
                                 var jsonLoginEvent = consumeResult != null ? consumeResult.Message.Value : "";
                                 _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
                                 // Process the received message using the topic event processor
-                                string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
+                                //string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
 
-                                var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
+                                var response = await processor.ProcessEventAsync(consumeResult.Message.Key, jsonLoginEvent);
 
                                 bool messageProduced = await _producer.Produce(responsTopic, consumeResult.Message.Key, response.Value);
                                 if (messageProduced)
@@ -103,6 +106,11 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
                                     _logger.LogError($"Failed to produce Kafka message on topic '{responsTopic}':Message: {response} : Key: {consumeResult.Message.Key}");
 
                                 }
+                            }
+                            else
+                            {
+                                // No more messages to consume, you can break the loop to stop the consumer.
+                                return;
                             }
 
 
@@ -124,7 +132,7 @@ namespace Damaris.DataService.Services.v1.KafkaConsumer
 
                     _logger.LogError(ex, $"Error processing Kafka message on topic '{topic}'.");
                 }    
-            }
+            
         }
 
         public Task ConsumeAsync(string topic, Action<string> processMessage, CancellationToken cancellationToken)

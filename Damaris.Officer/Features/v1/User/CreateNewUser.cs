@@ -4,6 +4,7 @@ using Damaris.Officer.Utilities.v1;
 using Damaris.Officer.Utilities.v1.Generic;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
+using Newtonsoft.Json;
 
 namespace Damaris.Officer.Features.v1.User
 {
@@ -26,9 +27,9 @@ namespace Damaris.Officer.Features.v1.User
         {
 
             // Log the request to the watchdog logger
-            _logger.LogInformation("Preparing request to Kafka: {request}", request);
+            _logger.LogInformation("Preparing request to Kafka: {request}", request.AccountRegistration);
             // Serialize the login event to JSON
-            //var jsonLoginEvent = JsonConvert.SerializeObject(request);
+            var jsonRegisterEvent = JsonConvert.SerializeObject(request);
 
             //create a hash code based on email/username for identifier 
             string key = GenerateHashCode.GetHashCode(request.AccountRegistration.Accounts[0].Email.ToString());
@@ -38,13 +39,13 @@ namespace Damaris.Officer.Features.v1.User
             ConsumeResult<string, string> response = null;
 
             // Send the message to Kafka
-            bool messageProduced = await _producer.Produce(Topic, key, request.AccountRegistration.ToString());
+            bool messageProduced = await _producer.Produce(Topic, key, jsonRegisterEvent);
             if (messageProduced == true)
             {
                 
                 //consuming message from kafka topic response specifiyng the identifier
-                ConsumeResult<string, string> processedData = _consumer.WaitForResponse(ResponseTopic, key);
-                return processedData;
+               // ConsumeResult<string, string> processedData = _consumer.WaitForResponse(ResponseTopic, key);
+                return null;
             }
             return null;
 

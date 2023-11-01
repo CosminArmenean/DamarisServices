@@ -27,13 +27,18 @@ namespace Damaris.Officer.Controllers.v1
     [MyActionFilterAttribute("IdentityUserFilterAttribute")]    
     public class IdentityController : ApiBaseController
     {
+       
         private readonly UserManager<IdentityUser> _userManager;
         private readonly KafkaProducer<string, string> _consumer;
         private readonly KafkaProducer<string, string> _producer;
         private readonly ILogger<IdentityController> _logger;
         private readonly IMapper _mapper;
 
-        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory, IMapper mapper) : base(mediator, producer, consumer, loggerFactory, mapper) { }
+        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, UserManager<IdentityUser> userManager, ILoggerFactory loggerFactory, IMapper mapper) : base(mediator, producer, consumer, userManager, loggerFactory, mapper) 
+        {
+            _userManager = userManager;
+            _mapper = mapper;
+        }
 
 
 
@@ -70,7 +75,7 @@ namespace Damaris.Officer.Controllers.v1
                 {
                     if (modelRegistration.Accounts[0].Main == true)
                     {
-                        user = _mapper.Map<IdentityUser>(modelRegistration.Accounts[0]);
+                        user =  _mapper.Map<IdentityUser>(modelRegistration.Accounts[0]);
                         string username = GenerateUniqueUsername.GenereateUsername(modelRegistration.Accounts[0].FirstName, modelRegistration.Accounts[0].LastName);
                         user.UserName = username;
                         if (modelRegistration.IsJointAccount && modelRegistration.Accounts.Count > 0)
@@ -86,7 +91,7 @@ namespace Damaris.Officer.Controllers.v1
                         var register = await _userManager.CreateAsync(user);
                         if (register.Succeeded)
                         {
-                            return Ok("User created successfully.");
+                            return Ok();
                         }
                         else
                         {

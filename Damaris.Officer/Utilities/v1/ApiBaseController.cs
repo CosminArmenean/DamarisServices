@@ -3,12 +3,14 @@ using Confluent.Kafka;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Damaris.Officer.Utilities.v1
 {
     public abstract class ApiBaseController : Controller
     {
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly KafkaProducer<string, string> _producer;
         private readonly KafkaConsumer<string, string> _consumer;
         private readonly ILogger _logger;
@@ -19,7 +21,7 @@ namespace Damaris.Officer.Utilities.v1
         /// </summary>
         /// <param name="mediator"></param>
         /// <param name="loggerFactory"></param>
-        public ApiBaseController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory, IMapper mapper)
+        public ApiBaseController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer,UserManager<IdentityUser> userManager, ILoggerFactory loggerFactory, IMapper mapper)
         {
             _producer = producer;
             _consumer = consumer;

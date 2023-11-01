@@ -4,9 +4,9 @@ using Damaris.Domain.v1.Models.User;
 
 namespace Damaris.DataService.MappingProfiles.v1
 {
-    public class RequestToDomains : Profile
+    public class MappingProfile : Profile
     {
-        public RequestToDomains()
+        public MappingProfile()
         {
             CreateMap<RegisterUserDto, RegisterUser>()
                 .ForMember(dest => dest.Email,

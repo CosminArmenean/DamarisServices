@@ -10,23 +10,24 @@ namespace Damaris.Officer.Repositories.v1.Implementations.TopicEventsProcessor
     {
         private readonly string IDENTITY_REGISTRATION_TOPIC = "user-registration-topic";
         private readonly string IDENTITY_REGISTRATION_RESPONSE_TOPIC = "user-registration-response-topic";
+        private readonly string DATA = "REGISTER";
 
         private readonly ILogger<RegisterUserEventProcessor> _logger;
         private readonly IUserRepository _userRepository;
         string IKafkaTopicEventProcessor<string, string>.Topic => IDENTITY_REGISTRATION_TOPIC;
 
         string IKafkaTopicEventProcessor<string, string>.ResponseTopic => IDENTITY_REGISTRATION_RESPONSE_TOPIC;
+        string IKafkaTopicEventProcessor<string, string>.Data => DATA;
 
         public RegisterUserEventProcessor(ILogger<RegisterUserEventProcessor> logger, IUserRepository userRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
         }
-        public async Task<ConsumeResult<string, string>> ProcessEventAsync(string eventType, string key, string value)
+        public async Task<ConsumeResult<string, string>> ProcessEventAsync( string key, string message)
         {
             ConsumeResult<string, string> result = null;
-            if (eventType is string loginEvent)
-            {
+         
                 try
                 {
                     // Deserialize the JSON message to extract username and password
@@ -45,16 +46,11 @@ namespace Damaris.Officer.Repositories.v1.Implementations.TopicEventsProcessor
 
 
 
-                _logger.LogInformation($"Received login event: {loginEvent}");
+                _logger.LogInformation($"Received login event: {message}");
 
                 // Return a response if needed
                 return await Task.FromResult(result);
-            }
-            else
-            {
-                _logger.LogWarning($"Received an invalid login event of type ");
-                return result;
-            }
+           
         }
     }
 }

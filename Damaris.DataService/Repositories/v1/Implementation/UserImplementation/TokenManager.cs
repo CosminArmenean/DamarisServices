@@ -19,7 +19,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 
         public async Task<string> CreateAsync(User user)
         {
-            var claims = new JwtClaims() { Subject = user.Id, Issuer = "Damaris.DataService", Audience = "DamarisServices", ExpiresIn = 1693384435 };
+            var claims = new JwtClaims() { Subject = "",Issuer = "Damaris.DataService", Audience = "DamarisServices", ExpiresIn = 1693384435 };
                 
 
             var token = await _jwtTokenProvider.CreateToken(claims);

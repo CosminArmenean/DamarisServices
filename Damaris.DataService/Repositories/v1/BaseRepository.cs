@@ -13,7 +13,7 @@ namespace Damaris.DataService.Repositories.v1
     public abstract class BaseRepository
     {
         protected ILogger _logger;
-        protected readonly OfficerDbContext _officerDbContext;
+        protected readonly DamarisDbContext _officerDbContext;
         
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Damaris.DataService.Repositories.v1
         /// </summary>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="connectionString">The database connection string.</param>
-        public BaseRepository(ILoggerFactory loggerFactory, OfficerDbContext officerDbContext)
+        public BaseRepository(ILoggerFactory loggerFactory, DamarisDbContext officerDbContext)
         {
             _logger = loggerFactory.CreateLogger(GetType());
             _officerDbContext = officerDbContext;

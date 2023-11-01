@@ -18,7 +18,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 {
     public class UserRepository : BaseRepository, IUserRepository
     {
-        private readonly OfficerDbContext _officerDbContext;
+        private readonly DamarisDbContext _officerDbContext;
         private readonly ILogger _logger;
         //procedures names
         #region ================ [Procedures] =========================
@@ -35,7 +35,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
         /// </summary>
         /// <param name="loggerFactory"></param>
         /// <param name="connectionString"></param>
-        public UserRepository(ILoggerFactory loggerFactory, OfficerDbContext officerDbContext) : base(loggerFactory, officerDbContext) 
+        public UserRepository(ILoggerFactory loggerFactory, DamarisDbContext officerDbContext) : base(loggerFactory, officerDbContext) 
         {
             _logger = loggerFactory.CreateLogger(GetType());
             _officerDbContext = officerDbContext;

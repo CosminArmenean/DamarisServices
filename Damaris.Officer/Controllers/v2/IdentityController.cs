@@ -6,6 +6,7 @@ using Damaris.Officer.Utilities.v1;
 using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -24,7 +25,7 @@ namespace Damaris.Officer.Controllers.v2
         private readonly ILogger<IdentityController> _logger;
         private readonly IMapper _mapper;
 
-        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, ILoggerFactory loggerFactory, IMapper mapper) : base(mediator, producer, consumer, loggerFactory, mapper) { }
+        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, UserManager<IdentityUser> userManager, ILoggerFactory loggerFactory, IMapper mapper) : base(mediator, producer, consumer, userManager, loggerFactory, mapper) { }
 
 
         [HttpGet(Name = "GetWeatherForecast")]

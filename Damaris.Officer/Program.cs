@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var assembly = typeof(Program).Assembly.GetName().Name;
 // Add services to the container.
 var officerMysql = builder.Configuration.GetConnectionString(name: "Officer");
 
@@ -224,17 +225,33 @@ builder.Services.AddCors(options =>
 });
 
 //Adding IdentityServer4-net6
+//builder.Services.AddIdentityServer()    
+//    .AddInMemoryClients(new List<Client>())
+//    .AddInMemoryIdentityResources(new List<IdentityResource>())
+//    .AddInMemoryApiResources(new List<ApiResource>())
+//    .AddInMemoryApiScopes(new List<ApiScope>())
+//    .AddTestUsers(new List<TestUser>())
+//    .AddDeveloperSigningCredential();
+
 builder.Services.AddIdentityServer()
-    .AddInMemoryClients(new List<Client>())
-    .AddInMemoryIdentityResources(new List<IdentityResource>())
-    .AddInMemoryApiResources(new List<ApiResource>())
-    .AddInMemoryApiScopes(new List<ApiScope>())
-    .AddTestUsers(new List<TestUser>())
+    .AddConfigurationStore(options =>
+    {
+        options.ConfigureDbContext = b =>
+        b.UseMySql(officerMysql, ServerVersion.AutoDetect(officerMysql), opt => opt.MigrationsAssembly(assembly));
+    })
+    .AddOperationalStore(options =>
+    {
+        options.ConfigureDbContext = b =>
+        b.UseMySql(officerMysql, ServerVersion.AutoDetect(officerMysql), opt => opt.MigrationsAssembly(assembly));
+    })    
     .AddDeveloperSigningCredential();
+
+
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
         .AddEntityFrameworkStores<OfficerDbContext>()
         .AddDefaultTokenProviders();
+
 
 //Add MediatR           
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));

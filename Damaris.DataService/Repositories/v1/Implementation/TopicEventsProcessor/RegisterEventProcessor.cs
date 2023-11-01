@@ -13,48 +13,45 @@ namespace Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcesso
     {
         private readonly ILogger<LoginEventProcessor> _logger;
         private readonly IUserRepository _userRepository;
+       
         private readonly string IDENTITY_REGISTRATION_TOPIC = "user-registration-topic";
         private readonly string IDENTITY_REGISTRATION_RESPONSE_TOPIC = "user-registration-response-topic";
+        private readonly string DATA = "REGISTER";
         public string Topic => IDENTITY_REGISTRATION_TOPIC;
         public string ResponseTopic => IDENTITY_REGISTRATION_RESPONSE_TOPIC;
+        public string Data => DATA;
         public RegisterEventProcessor(ILogger<LoginEventProcessor> logger, IUserRepository userRepository) 
         {
             _logger = logger;
             _userRepository = userRepository;
         }
-        public async Task<ConsumeResult<string, string>> ProcessEventAsync(string eventType, string key, string message)
+        public async Task<ConsumeResult<string, string>> ProcessEventAsync(string key, string message)
         {
             ConsumeResult<string, string> result = null;
-            if (eventType is string loginEvent)
+           
+            try
             {
-                try
-                {
-                    // Deserialize the JSON message to extract username and password
-                    var register = JsonConvert.DeserializeObject<AccountRegistrationRequestDto>(message);
+                // Deserialize the JSON message to extract username and password
+                AccountRegistrationRequestDto? register = JsonConvert.DeserializeObject<AccountRegistrationRequestDto>(message);
 
                     // Retrieve the user from the database by username
                     //var user = await _userRepository.GetUserByEmailAsync(loginData.Email);
 
                     
-                }
-                catch (Exception ex)
-                {
+            }
+            catch (Exception ex)
+            {
                     // Handle exceptions
-                    _logger.LogError($"Error processing login: {ex.Message}");
-                }
+                    _logger.LogError($"Error processing register: {ex.Message}");
+            }
 
 
 
-                _logger.LogInformation($"Received login event: {loginEvent}");
+                _logger.LogInformation($"Received register event: {message}");
 
                 // Return a response if needed
                 return await Task.FromResult(result);
-            }
-            else
-            {
-                _logger.LogWarning($"Received an invalid login event of type ");
-                return result;
-            }
+           
 
         }
     }

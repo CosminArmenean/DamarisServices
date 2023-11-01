@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Damaris.DataService.Data.v1
 {
-    public class OfficerDbContext : DbContext
+    public class DamarisDbContext : DbContext
     {
         public virtual DbSet<User> Users { get; set; }
 
-        public OfficerDbContext(DbContextOptions<OfficerDbContext> options) : base(options) { }
+        public DamarisDbContext(DbContextOptions<DamarisDbContext> options) : base(options) { }
         
 
     }

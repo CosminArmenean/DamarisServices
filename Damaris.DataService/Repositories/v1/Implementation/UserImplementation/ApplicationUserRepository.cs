@@ -24,7 +24,7 @@ namespace Damaris.DataService.Repositories.v1.Implementation.UserImplementation
 
          #region ==================== [Constructor] =========================
 
-         public ApplicationUserRepository(ILoggerFactory loggerFactory, OfficerDbContext officerDbContext) : base(loggerFactory, officerDbContext)
+         public ApplicationUserRepository(ILoggerFactory loggerFactory, DamarisDbContext officerDbContext) : base(loggerFactory, officerDbContext)
          {
             // _usersTable = new UserProvider(loggerFactory, connectionFactory);
          }

@@ -4,9 +4,10 @@ namespace KafkaCommunicationLibrary.Repositories.Interfaces
 {
     public interface IKafkaTopicEventProcessor<TKey, TValue>
     {
+        string Data { get; }
         string Topic { get; }
         string ResponseTopic { get; }
-        Task<ConsumeResult<TKey, TValue>> ProcessEventAsync(string eventType, TKey key, TValue value);
+        Task<ConsumeResult<TKey, TValue>> ProcessEventAsync(TKey key, TValue value);
         
     }
 }

@@ -14,19 +14,20 @@ namespace Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcesso
         private readonly IUserRepository _userRepository;
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         private readonly string IDENTITY_AUTHENTICATION_RESPONSE_TOPIC = "user-authentication-response-topic";
+        private readonly string DATA = "LOGIN";
         public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
         public string ResponseTopic => IDENTITY_AUTHENTICATION_RESPONSE_TOPIC;
+        public string Data => DATA;
 
         public LoginEventProcessor(ILogger<LoginEventProcessor> logger, IUserRepository userRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
         }
-        public async Task<ConsumeResult<string, string>> ProcessEventAsync(string eventType, string key, string message)
+        public async Task<ConsumeResult<string, string>> ProcessEventAsync(string key, string message)
         {
             ConsumeResult<string, string> result = null;
-            if (eventType is string loginEvent)
-            {
+          
                 try
                 {
                     // Deserialize the JSON message to extract username and password
@@ -56,16 +57,11 @@ namespace Damaris.DataService.Repositories.v1.Implementation.TopicEventsProcesso
                 
 
 
-                _logger.LogInformation($"Received login event: {loginEvent}");
+                _logger.LogInformation($"Received login event: {message}");
 
                 // Return a response if needed
                 return await Task.FromResult(result);
-            }
-            else
-            {
-                _logger.LogWarning($"Received an invalid login event of type ");
-                return result;
-            }
+          
 
         }
 

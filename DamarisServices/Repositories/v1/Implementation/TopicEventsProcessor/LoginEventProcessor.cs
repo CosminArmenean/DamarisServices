@@ -9,8 +9,10 @@ namespace DamarisServices.Repositories.v1.Implementation.TopicEventsProcessor
         private readonly ILogger<LoginEventProcessor> _logger;
         private readonly string IDENTITY_AUTHENTICATION_TOPIC = "user-authentication-topic";
         private readonly string IDENTITY_AUTHENTICATION_RESPONSE_TOPIC = "user-authentication-response-topic";
+        private readonly string DATA = "LOGIN";
         public string Topic => IDENTITY_AUTHENTICATION_TOPIC;
         public string ResponseTopic => IDENTITY_AUTHENTICATION_RESPONSE_TOPIC;
+        public string Data => DATA;
 
         //public async Task<string> ProcessEventAsync(string message)
         //{
@@ -24,7 +26,7 @@ namespace DamarisServices.Repositories.v1.Implementation.TopicEventsProcessor
         {
             _logger = logger;  
         }
-        public async Task<ConsumeResult<string, string>> ProcessEventAsync(string eventType, string key, string message)
+        public async Task<ConsumeResult<string, string>> ProcessEventAsync( string key, string message)
         {
             // Handle login event logic
             //await Task.Delay(TimeSpan.FromSeconds(2)); // Simulate processing time

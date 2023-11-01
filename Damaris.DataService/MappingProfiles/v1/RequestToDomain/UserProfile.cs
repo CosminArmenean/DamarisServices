@@ -13,12 +13,7 @@ namespace Damaris.DataService.MappingProfiles.v1.RequestToDomain
                     opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName,
                     opt => opt.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.PasswordHash,
-                    opt => opt.MapFrom(src => src.Password))
-                .ForMember(dest => dest.Email,
-                    opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.EmailConfirmed,
-                    opt => opt.MapFrom(src => src.EmailConfirmation))
+               
                 .ForMember(dest => dest.Country.Code,
                     opt => opt.MapFrom(src => src.CountryCode))
                 .ForMember(dest => dest.MobilePhone,

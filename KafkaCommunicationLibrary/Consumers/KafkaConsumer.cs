@@ -43,7 +43,7 @@ namespace KafkaCommunicationLibrary.Consumers
                 obj =>
                 {
                     var (c, ct) = ((IConsumer<TKey, TValue>, CancellationToken))obj!;
-                    return c.Consume(ct);
+                    return c.Consume(cancellationToken);
                 },
                 (this._consumer, cancellationToken),
                 cancellationToken,
@@ -85,7 +85,7 @@ namespace KafkaCommunicationLibrary.Consumers
 
             while (!responseFound)
             {
-                ConsumeResult<TKey, TValue> consumeResult = _consumer.Consume();
+                ConsumeResult<TKey, TValue> consumeResult = _consumer.Consume(timeout: TimeSpan.Zero);
                 if(consumeResult != null && consumeResult.Message.Key != null && consumeResult.Message.Key.ToString() == uniqueKey)
                 {
                     var message = consumeResult;

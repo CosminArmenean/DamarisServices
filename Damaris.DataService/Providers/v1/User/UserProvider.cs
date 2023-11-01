@@ -24,7 +24,7 @@ namespace Damaris.DataService.Providers.v1.User
         /// </summary>
         /// <param name="loggerFactory"></param>
         /// <param name="connectionFactory"></param>
-        public UserProvider(ILoggerFactory loggerFactory, OfficerDbContext officerDbContext) : base(loggerFactory, officerDbContext)
+        public UserProvider(ILoggerFactory loggerFactory, DamarisDbContext officerDbContext) : base(loggerFactory, officerDbContext)
         {
 
         }

@@ -66,7 +66,7 @@ namespace Damaris.Officer.Services.v1
         {
             foreach (var processor in _topicEventProcessors)
             {
-                var topic = processor.Topic;
+                var topic = processor.ResponseTopic;
                 _consumer.Subscribe(topic);
                 try
                 {
@@ -81,9 +81,9 @@ namespace Damaris.Officer.Services.v1
                                 var jsonLoginEvent = consumeResult.Message.Value;
                                 _logger.LogInformation($"Received Kafka message on topic '{topic}': {topic}");
                                 // Process the received message using the topic event processor
-                                string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
+                                //string eventType = ExtractValueFromJson.ExtractAttributeValue(jsonLoginEvent, JsonAttributes.RequestTypeAttribute);
 
-                                var response = await processor.ProcessEventAsync(eventType, consumeResult.Message.Key, jsonLoginEvent);
+                                var response = await processor.ProcessEventAsync(consumeResult.Message.Key, jsonLoginEvent);
 
                             }
                             else

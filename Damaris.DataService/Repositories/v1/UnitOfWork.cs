@@ -9,12 +9,12 @@ namespace Damaris.DataService.Repositories.v1
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
 
-        private readonly OfficerDbContext _officerDbContext;
+        private readonly DamarisDbContext _officerDbContext;
         private readonly ILoggerFactory _loggerFactory;
         private bool _transactionStarted;
         public IUserRepository Users { get; }
 
-        public UnitOfWork(ILoggerFactory loggerFactory, OfficerDbContext officerDbContext)
+        public UnitOfWork(ILoggerFactory loggerFactory, DamarisDbContext officerDbContext)
         {
             _officerDbContext = officerDbContext;
             _loggerFactory = loggerFactory;
