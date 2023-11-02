@@ -6,7 +6,7 @@ using Damaris.Officer.Repositories.v1.Interfaces.UserInterface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using static IdentityServer4.Models.IdentityResources;
+
 
 namespace Damaris.Officer.Repositories.v1.Implementations.UserImplementation
 {

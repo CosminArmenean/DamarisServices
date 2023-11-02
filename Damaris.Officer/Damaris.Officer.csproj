@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Damaris.Common\Damaris.Common.csproj" />
+    <ProjectReference Include="..\IdentityServer4-net6\src\AspNetIdentity\src\IdentityServer4.AspNetIdentity.csproj" />
     <ProjectReference Include="..\IdentityServer4-net6\src\EntityFramework.Storage\src\IdentityServer4.EntityFramework.Storage.csproj" />
     <ProjectReference Include="..\IdentityServer4-net6\src\EntityFramework\src\IdentityServer4.EntityFramework.csproj" />
     <ProjectReference Include="..\IdentityServer4-net6\src\IdentityServer4\src\IdentityServer4.csproj" />

@@ -26,12 +26,21 @@ using Damaris.Officer.Configuration.Filters;
 using Damaris.Officer.MappingProfiles.v1.RequestToDomain;
 using Damaris.Officer.Domain.v1;
 using Microsoft.AspNetCore.Identity;
+using Damaris.Officer.Configuration;
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+var officerMysql = builder.Configuration.GetConnectionString(name: "Officer");
+//run this just once when seeting identity for first time
+//SeedData.EnsureSeedData(officerMysql);
+
+
+
 var assembly = typeof(Program).Assembly.GetName().Name;
 // Add services to the container.
-var officerMysql = builder.Configuration.GetConnectionString(name: "Officer");
 
 builder.Services.AddControllers(option =>
 {
@@ -232,8 +241,14 @@ builder.Services.AddCors(options =>
 //    .AddInMemoryApiScopes(new List<ApiScope>())
 //    .AddTestUsers(new List<TestUser>())
 //    .AddDeveloperSigningCredential();
+//builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, UserClaimsPrincipalFactory<IdentityUser>>();
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+        .AddEntityFrameworkStores<OfficerDbContext>()
+        .AddDefaultTokenProviders();
 
 builder.Services.AddIdentityServer()
+    .AddAspNetIdentity<IdentityUser>()
     .AddConfigurationStore(options =>
     {
         options.ConfigureDbContext = b =>
@@ -248,9 +263,7 @@ builder.Services.AddIdentityServer()
 
 
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-        .AddEntityFrameworkStores<OfficerDbContext>()
-        .AddDefaultTokenProviders();
+
 
 
 //Add MediatR           
@@ -260,7 +273,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Get
 
 var app = builder.Build();
 
-
+app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -286,7 +299,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(OfficerAllowSpecificOrigins);
 
-app.UseAuthorization();
+app.UseRouting();
 
 //inject WatchDog Logger to the middleware 
 app.UseWatchDogExceptionLogger();
@@ -298,6 +311,8 @@ app.UseWatchDog(opt =>
 });
 
 app.UseIdentityServer();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

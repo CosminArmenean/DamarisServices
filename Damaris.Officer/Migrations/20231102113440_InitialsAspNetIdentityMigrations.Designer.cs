@@ -3,6 +3,7 @@ using System;
 using Damaris.Officer.Data.v1;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Damaris.Officer.Migrations
 {
     [DbContext(typeof(OfficerDbContext))]
-    partial class OfficerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231102113440_InitialsAspNetIdentityMigrations")]
+    partial class InitialsAspNetIdentityMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -21,10 +21,9 @@ namespace Damaris.Officer.Utilities.v1
         /// </summary>
         /// <param name="mediator"></param>
         /// <param name="loggerFactory"></param>
-        public ApiBaseController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer,UserManager<IdentityUser> userManager, ILoggerFactory loggerFactory, IMapper mapper)
+        public ApiBaseController(IMediator mediator, UserManager<IdentityUser> userManager, ILoggerFactory loggerFactory, IMapper mapper)
         {
-            _producer = producer;
-            _consumer = consumer;
+          
             _logger = loggerFactory.CreateLogger(GetType());
             _mediator = mediator;
             _mapper = mapper;
