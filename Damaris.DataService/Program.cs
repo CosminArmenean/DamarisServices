@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Confluent.Kafka;
 using Damaris.DataService.Data.v1;
 using Damaris.DataService.Domain.v1.Models.Generic;
@@ -19,6 +20,7 @@ using KafkaCommunicationLibrary.Domain.Models;
 using KafkaCommunicationLibrary.Producers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Internal;
@@ -38,6 +40,7 @@ IConfiguration configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllers();
 
+
 // Bind configuration to classes
 //AppSettings? appSettings = new() {  };
 var DamarisMySqlReadWrite = builder.Configuration.GetConnectionString(name: "DamarisMySqlReadWrite");
@@ -48,8 +51,29 @@ var WatchDogPostGreSql = builder.Configuration.GetConnectionString(name: "WatchD
 //builder.Services.AddSingleton(appSettings);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddMvc();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Epitome API", Version = "v1" });
+    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Epitome API", Version = "v2" });
+    c.ResolveConflictingActions(apiDescription => apiDescription.First());
+
+});
+builder.Services.AddSwaggerGenNewtonsoftSupport();
+
+//builder.Services.AddVersionedApiExplorer(options =>
+//{
+//    options.GroupNameFormat = "'v'VVV";
+//    options.SubstituteApiVersionInUrl = true;
+//});
+
+
+
+
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 //Add WatchDog Logger
 builder.Services.AddLogging(logging => logging.AddWatchDogLogger());
@@ -144,11 +168,32 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Get
 byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtConfig:Secret"]);
 
 
+//Add Concurency Rate Limiter 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddConcurrencyLimiter("ConcurrencyPolicy", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.QueueLimit = 5;
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+    }).RejectionStatusCode = 429; // To many requests
+});
 
+
+//adding cors 
+var OfficerAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: OfficerAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+        });
+});
 //Adding identity
 //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    //.AddEntityFrameworkStores<OfficerDbContext>()
-    //.AddDefaultTokenProviders();
+//.AddEntityFrameworkStores<OfficerDbContext>()
+//.AddDefaultTokenProviders();
 
 
 // Add IdentityServer4 to the services.
@@ -160,11 +205,11 @@ byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtConfig:Secret"]);
 //builder.Services.AddIdentityServer()
 //    .AddAspNetIdentity<ApplicationUser>()
 //    .AddProfileService<IdentityServerServiceProvider>();    
-    //.AddConfigurationStore(options =>
-    //{
-    //    options.ConfigureDbContext = builder => builder.UseMySql(Configuration.GetConnectionString("Officer"),
-    //        MySqlOptions => MySqlOptions.MigrationAssembly("Damaris.DataService"));
-    //});
+//.AddConfigurationStore(options =>
+//{
+//    options.ConfigureDbContext = builder => builder.UseMySql(Configuration.GetConnectionString("Officer"),
+//        MySqlOptions => MySqlOptions.MigrationAssembly("Damaris.DataService"));
+//});
 //builder.Services.AddScoped<IdentityServiceConsumer>();
 //builder.Services.AddScoped<IHostedService, IdentityServiceConsumer>();
 ///builder.Services.AddSingleton<IHostedService, IdentityServiceConsumer>();
@@ -188,10 +233,19 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI( c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Epitome API V1");
+    });
 }
+//rate limiter 
+app.UseRateLimiter();
 
 app.UseHttpsRedirection();
+app.UseCors(OfficerAllowSpecificOrigins);
+
+app.UseRouting();
+
 
 app.UseAuthorization();
 

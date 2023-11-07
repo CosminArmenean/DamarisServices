@@ -4,45 +4,45 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>eefc1994-55c3-4540-9e84-e53c38986a26</UserSecretsId>
+    <UserSecretsId>e9cdf8c2-9555-4332-a7f7-25d15ba67cb3</UserSecretsId>
     <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="7.1.0" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="ASpNetCore.Healthchecks.UI.Client" Version="7.1.0" />
     <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
     <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
-    <PackageReference Include="Silverback.Integration.Kafka" Version="4.3.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="RestSharp" Version="110.2.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.7.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
     <PackageReference Include="WatchDog.NET" Version="1.4.10" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Damaris.Common\Damaris.Common.csproj" />
-    <ProjectReference Include="..\IdentityServer4-net6\src\AspNetIdentity\src\IdentityServer4.AspNetIdentity.csproj" />
-    <ProjectReference Include="..\IdentityServer4-net6\src\EntityFramework.Storage\src\IdentityServer4.EntityFramework.Storage.csproj" />
-    <ProjectReference Include="..\IdentityServer4-net6\src\EntityFramework\src\IdentityServer4.EntityFramework.csproj" />
-    <ProjectReference Include="..\IdentityServer4-net6\src\IdentityServer4\src\IdentityServer4.csproj" />
-    <ProjectReference Include="..\IdentityServer4-net6\src\Storage\src\IdentityServer4.Storage.csproj" />
+    <ProjectReference Include="..\Damaris.Domain\Damaris.Domain.csproj" />
+    <ProjectReference Include="..\IdentityServer4.AccessTokenValidation\src\IdentityServer4.AccessTokenValidation.csproj" />
     <ProjectReference Include="..\KafkaCommunicationLibrary\KafkaCommunicationLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\v2\" />
+    <Folder Include="Features\v2\" />
   </ItemGroup>
 
 </Project>

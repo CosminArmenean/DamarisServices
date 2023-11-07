@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Confluent.Kafka;
 using Damaris.DataService.Repositories.v1.Interfaces.Generic;
 using Damaris.DataService.Utilities.v1;
@@ -7,9 +8,14 @@ using KafkaCommunicationLibrary.Consumers;
 using KafkaCommunicationLibrary.Producers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Damaris.DataService.Controllers.v1
 {
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0", Deprecated = false)]
+    [EnableRateLimiting("ConcurrencyPolicy")]
     public class IdentityController : ApiBaseController
     {
         private readonly IProducer<string, string> _producer;

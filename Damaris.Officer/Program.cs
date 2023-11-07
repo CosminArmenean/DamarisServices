@@ -7,7 +7,6 @@ using KafkaCommunicationLibrary.Producers;
 using KafkaCommunicationLibrary.Repositories.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using System.Collections.Concurrent;
 using System.Globalization;
 using WatchDog;
@@ -27,9 +26,13 @@ using Damaris.Officer.MappingProfiles.v1.RequestToDomain;
 using Damaris.Officer.Domain.v1;
 using Microsoft.AspNetCore.Identity;
 using Damaris.Officer.Configuration;
-
-
-
+using Asp.Versioning;
+using Damaris.Officer.Utilities.v1;
+using Asp.Versioning.Conventions;
+using Damaris.Officer.Controllers.v1;
+using Damaris.Officer.Configuration.Swagger;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,41 +51,31 @@ builder.Services.AddControllers(option =>
 });
 
 
-builder.Services.AddMvc();
-builder.Services.AddSwaggerGen( c =>
-{
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Identity API", Version = "v1" });
-    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Identity API", Version = "v2" });
-    c.EnableAnnotations();
-    c.ResolveConflictingActions(apiDescription => apiDescription.First());
 
-});
-builder.Services.AddSwaggerGenNewtonsoftSupport();
-//builder.Services.AddSwaggerGen(c =>
-//{
-//    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
-//});
-//Add api versioning
+
+//ASP versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
     options.ReportApiVersions = true;
-    options.ApiVersionReader = ApiVersionReader.Combine(
-        //new QueryStringApiVersionReader("api-version"),
-        new HeaderApiVersionReader("x-version")
-    //new MediaTypeApiVersionReader("ver")
-    );
-});
+    options.DefaultApiVersion = new ApiVersion(1.0);
+})
+    .AddApiExplorer(options =>
+    {
+        // Add the versioned API explorer, which also adds IApiVersionDescriptionProvider service
+        // note: the specified format code will format the version as "'v'major[.minor][-status]"
+        options.GroupNameFormat = "'v'VVV";
 
-builder.Services.AddVersionedApiExplorer(options =>
+        // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
+        // can also be used to control the format of the API version in route templates
+        options.SubstituteApiVersionInUrl = true;
+    });
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerGen(options =>
 {
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
+    // Add a custom operation filter which sets default values
+    options.OperationFilter<SwaggerDefaultValues>();
 });
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
 
 
 //Initialize AutoMapper
@@ -122,23 +115,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddLocalization();
 
 //Add api versioning
-builder.Services.AddApiVersioning(options =>
-{
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
-    options.ReportApiVersions = true;    
-    options.ApiVersionReader = ApiVersionReader.Combine(
-        //new QueryStringApiVersionReader("api-version"),
-        new HeaderApiVersionReader("x-version")
-        //new MediaTypeApiVersionReader("ver")
-    );
-});
 
-builder.Services.AddVersionedApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
-});
 
 //Add Rate Limiter fixed window  x/user
 builder.Services.AddRateLimiter(options =>
@@ -273,14 +250,23 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Get
 
 var app = builder.Build();
 
+
 app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI( c =>
+    app.UseSwaggerUI(options =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity Server API V1");
+        var descriptions = app.DescribeApiVersions();
+
+        // Build a swagger endpoint for each discovered API version
+        foreach (var description in descriptions)
+        {
+            var url = $"/swagger/{description.GroupName}/swagger.json";
+            var name = description.GroupName.ToUpperInvariant();
+            options.SwaggerEndpoint(url, name);
+        }
     });
 }
 
@@ -313,6 +299,11 @@ app.UseWatchDog(opt =>
 app.UseIdentityServer();
 
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
 
 app.MapControllers();
 

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Damaris.Domain.v1.Dtos.Requests.Account;
 using Damaris.Domain.v1.Models.User;
 using Damaris.Officer.Configuration.Filters;
@@ -13,11 +14,10 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace Damaris.Officer.Controllers.v2
 {
     [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiVersion("2.0")]
-    [ApiVersion("2.1")]
+    [Route("api/v{version:apiVersion}/[controller]")] 
     [EnableRateLimiting("ConcurrencyPolicy")]
     [MyActionFilterAttribute("IdentityUserFilterAttribute")]
+    [ApiVersion("2.0")]
     public class IdentityController : ApiBaseController
     {
 
@@ -25,32 +25,15 @@ namespace Damaris.Officer.Controllers.v2
         private readonly ILogger<IdentityController> _logger;
         private readonly IMapper _mapper;
 
-        public IdentityController(IMediator mediator, KafkaProducer<string, string> producer, KafkaConsumer<string, string> consumer, UserManager<IdentityUser> userManager, ILoggerFactory loggerFactory, IMapper mapper) : base(mediator, producer, consumer, userManager, loggerFactory, mapper) { }
+        public IdentityController(IMediator mediator, UserManager<IdentityUser> userManager, ILoggerFactory loggerFactory, IMapper mapper) : base(mediator, userManager, loggerFactory, mapper) { }
 
 
-        [HttpGet(Name = "GetWeatherForecast")]
+
+
         [MapToApiVersion("2.0")]
-        [Route("Get")]
-        public IEnumerable<WeatherForecast> GetV2()
-        {
-            string[] Summaries = new[]
-            {
-                     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-             };
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
-
-
         [Route("Login")]
-        [HttpPost(Name = "Login")]
-        [MapToApiVersion("2.0")]
-        public async Task<IActionResult> LoginV2([FromBody] LoginRequest model)
+        [HttpPost(Name = "Login")]      
+        public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
             //ApplicationUser user = new() { UserName = "Cosmin", PasswordHash = "test" };
             //user = await _userManager.FindByNameAsync(model.UserName);
@@ -64,12 +47,12 @@ namespace Damaris.Officer.Controllers.v2
 
             // Return processed data as response to the user
             return Ok();
-            return Unauthorized();
+            
         }
 
-        [Route("Register")]
-        [HttpPost(Name = "Register")]
         [MapToApiVersion("2.0")]
+        [Route("Register")]
+        [HttpPost(Name = "Register")]      
         public async Task<IActionResult> RegisterV2([FromBody] AccountRegistrationRequestDto model)
         {
             //ApplicationUser user = new() { UserName = "Cosmin", PasswordHash = "test" };

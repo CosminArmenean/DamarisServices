@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using MongoDB.Driver;
 using Swashbuckle.AspNetCore.Annotations;
 using Damaris.Officer.Utilities.v1.Extensions;
+using Asp.Versioning;
 
 namespace Damaris.Officer.Controllers.v1
 {
@@ -82,7 +83,7 @@ namespace Damaris.Officer.Controllers.v1
         [MapToApiVersion("1.0")]
         [HttpPost("Login")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LoginV1([FromBody] LoginRequest modelLogin)
+        public async Task<IActionResult> Login([FromBody] LoginRequest modelLogin)
         {
 
             // check if we are in the context of an authorization request
