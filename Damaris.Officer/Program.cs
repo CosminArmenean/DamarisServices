@@ -33,6 +33,7 @@ using Damaris.Officer.Controllers.v1;
 using Damaris.Officer.Configuration.Swagger;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +51,10 @@ builder.Services.AddControllers(option =>
     option.Filters.Add(new IdentityFilter());//global filter
 });
 
-
+builder.Services.AddMvc(options =>
+{
+    options.Filters.Add(new ValidateAntiForgeryTokenAttribute());
+});
 
 
 //ASP versioning
@@ -206,7 +210,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: OfficerAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+            policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         });
 });
 
@@ -235,7 +239,7 @@ builder.Services.AddIdentityServer()
     {
         options.ConfigureDbContext = b =>
         b.UseMySql(officerMysql, ServerVersion.AutoDetect(officerMysql), opt => opt.MigrationsAssembly(assembly));
-    })    
+    })
     .AddDeveloperSigningCredential();
 
 
@@ -287,6 +291,17 @@ app.UseCors(OfficerAllowSpecificOrigins);
 
 app.UseRouting();
 
+
+app.UseIdentityServer();
+
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
+
 //inject WatchDog Logger to the middleware 
 app.UseWatchDogExceptionLogger();
 //This authentication information (Username and Password) will be used to access the log viewer.
@@ -296,13 +311,8 @@ app.UseWatchDog(opt =>
     opt.WatchPagePassword = "Qwerty@123";
 });
 
-app.UseIdentityServer();
 
-app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+
 
 
 app.MapControllers();

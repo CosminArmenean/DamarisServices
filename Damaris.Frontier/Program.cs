@@ -40,6 +40,13 @@ builder.Services.AddControllers(option =>
     option.Filters.Add(new IdentityFilter()); //adding global filter
 });
 
+//adding bearer for IdentityServer4
+builder.Services.AddAuthentication("Bearer")
+    .AddIdentityServerAuthentication("Bearer", options =>
+    {
+        options.Authority = "https://localhost:44383";
+        options.ApiName = "innkt";
+    });
 
 //Configure Supported Cultures - Languages
 // Configure supported cultures and localization options
@@ -197,20 +204,20 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Get
 
 // Configure JWT authentication
 //need to proper configur this
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "your-issuer",
-            ValidAudience = "your-audience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key"))
-        };
-    });
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = "your-issuer",
+//            ValidAudience = "your-audience",
+//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key"))
+//        };
+//    });
 
 //adding cors 
 var frontierAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -262,9 +269,15 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 app.UseHttpsRedirection();
 app.UseCors(frontierAllowSpecificOrigins);
 
-app.UseRouting();   
+app.UseRouting();
+
+
+app.UseAuthentication();
+
 
 app.UseAuthorization();
+
+
 
 //inject WatchDog Logger to the middleware 
 app.UseWatchDogExceptionLogger();

@@ -31,6 +31,7 @@ namespace Damaris.Frontier.Controllers.v1
     [ApiVersion("1.1")]
     [EnableRateLimiting("ConcurrencyPolicy")]
     [MyActionFilterAttribute("UserController")]
+    [Authorize]
     public class UserController : ApiBaseController
     {
         #region ======================= [Private Properties] ==============================
