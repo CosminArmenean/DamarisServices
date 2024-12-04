@@ -228,19 +228,19 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
         .AddEntityFrameworkStores<OfficerDbContext>()
         .AddDefaultTokenProviders();
 
-builder.Services.AddIdentityServer()
-    .AddAspNetIdentity<IdentityUser>()
-    .AddConfigurationStore(options =>
-    {
-        options.ConfigureDbContext = b =>
-        b.UseMySql(officerMysql, ServerVersion.AutoDetect(officerMysql), opt => opt.MigrationsAssembly(assembly));
-    })
-    .AddOperationalStore(options =>
-    {
-        options.ConfigureDbContext = b =>
-        b.UseMySql(officerMysql, ServerVersion.AutoDetect(officerMysql), opt => opt.MigrationsAssembly(assembly));
-    })
-    .AddDeveloperSigningCredential();
+//builder.Services.AddIdentityServer()
+//    .AddAspNetIdentity<IdentityUser>()
+//    .AddConfigurationStore(options =>
+//    {
+//        options.ConfigureDbContext = b =>
+//        b.UseMySql(officerMysql, ServerVersion.AutoDetect(officerMysql), opt => opt.MigrationsAssembly(assembly));
+//    })
+//    .AddOperationalStore(options =>
+//    {
+//        options.ConfigureDbContext = b =>
+//        b.UseMySql(officerMysql, ServerVersion.AutoDetect(officerMysql), opt => opt.MigrationsAssembly(assembly));
+//    })
+//    .AddDeveloperSigningCredential();
 
 
 

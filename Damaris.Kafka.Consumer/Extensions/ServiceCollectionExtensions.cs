@@ -2,6 +2,7 @@
 using Damaris.Kafka.Consumer.Interfaces;
 using Damaris.Kafka.Consumer.Models;
 using Damaris.Kafka.Consumer.Telemetry;
+using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Damaris.Kafka.Consumer.Extensions
@@ -43,7 +44,7 @@ namespace Damaris.Kafka.Consumer.Extensions
             services
                 .AddSingleton<ISubscriberFactory, SubscriberFactory>()
                 .AddHostedService<BackgroundWorkerService>()
-                .AddMetrics();
+                ;
 
             KafkaTelemetry.SetReportingSchedule(settings.Telemetry);
         }
